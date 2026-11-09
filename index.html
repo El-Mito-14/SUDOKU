@@ -53,7 +53,7 @@ const bits=m=>{const a=[];for(let d=1;d<=9;d++)if(m>>d&1)a.push(d);return a};
 const sh=a=>{for(let i=a.length;i>1;){const j=Math.random()*i--|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const fmt=s=>(s/60|0)+':'+String(s%60).padStart(2,'0');
 const LV={easy:'Einfach',medium:'Mittel',hard:'Schwer',expert:'Experte',nightmare:'Alptraum'};
-const T={naked:'Nackter Einer',hidden:'Versteckter Einer',point:'Block-Zeilen-Ausschluss',claim:'Zeilen-Block-Ausschluss',nakedN2:'Nacktes Paar',nakedN3:'Nacktes Tripel',hiddenN2:'Verstecktes Paar',hiddenN3:'Verstecktes Tripel',fish2:'X-Wing',fish3:'Swordfish',fish4:'Jellyfish'};
+const T={naked:'Nackter Einer',hidden:'Versteckter Einer',point:'Block-Zeilen-Ausschluss',claim:'Zeilen-Block-Ausschluss',nakedN2:'Nacktes Paar',nakedN3:'Nacktes Tripel',hiddenN2:'Verstecktes Paar',hiddenN3:'Verstecktes Tripel',fish2:'X-Wing',fish3:'Swordfish',fish4:'Jellyfish',xy:'XY-Wing',xyz:'XYZ-Wing',ur:'Eindeutiges Rechteck'};
 
 /* ---------- Solver / Generator ---------- */
 function mrv(g){let b=-1,bm=0,bc=10;for(let i=0;i<81;i++)if(!g[i]){let m=0x3fe;for(const j of P[i])m&=~(1<<g[j]);const n=pc(m);if(n<bc){bc=n;b=i;bm=m;if(n<2)break}}return[b,bm]}
@@ -66,7 +66,20 @@ function single(C,g){
  for(let i=0;i<81;i++)if(!g[i]&&pc(C[i])==1){const v=bits(C[i])[0],inv=[];for(let d=1;d<=9;d++)if(d!=v){const j=P[i].find(j=>g[j]==d);if(j!=null)inv.push(j)}return{cell:i,val:v,tech:'naked',inv}}
  for(const u of U)for(let d=1;d<=9;d++){const cs=u.filter(i=>!g[i]&&C[i]>>d&1);if(cs.length==1){const inv=[];for(const i of u)if(i!=cs[0]&&!g[i]){const j=P[i].find(j=>g[j]==d&&!u.includes(j));if(j!=null&&!inv.includes(j))inv.push(j)}return{cell:cs[0],val:d,tech:'hidden',inv}}}
  return null}
-function elim(C,g){let r;
+const FX={
+xy(C,g){for(let p=0;p<81;p++){if(g[p]||pc(C[p])!=2)continue;const ws=P[p].filter(i=>!g[i]&&pc(C[i])==2);
+ for(const a of ws)for(const b of ws){if(b<=a)continue;const sa=C[a]&C[p],sb=C[b]&C[p],za=C[a]&~C[p],zb=C[b]&~C[p];
+  if(pc(sa)!=1||pc(sb)!=1||sa==sb||pc(za)!=1||za!=zb)continue;const z=bits(za)[0];
+  const rem=P[a].filter(i=>i!=p&&P[b].includes(i)&&!g[i]&&C[i]>>z&1).map(i=>[i,z]);if(rem.length)return{tech:'xy',inv:[p,a,b],rem}}}return null},
+xyz(C,g){for(let p=0;p<81;p++){if(g[p]||pc(C[p])!=3)continue;const ws=P[p].filter(i=>!g[i]&&pc(C[i])==2&&(C[i]&~C[p])==0);
+ for(const a of ws)for(const b of ws){if(b<=a||(C[a]|C[b])!=C[p]||pc(C[a]&C[b])!=1)continue;const z=bits(C[a]&C[b])[0];
+  const rem=P[p].filter(i=>P[a].includes(i)&&P[b].includes(i)&&!g[i]&&C[i]>>z&1).map(i=>[i,z]);if(rem.length)return{tech:'xyz',inv:[p,a,b],rem}}}return null},
+ur(C,g){for(let r1=0;r1<9;r1++)for(let r2=r1+1;r2<9;r2++)for(let c1=0;c1<9;c1++)for(let c2=c1+1;c2<9;c2++){
+ const q=[r1*9+c1,r1*9+c2,r2*9+c1,r2*9+c2];if(q.some(i=>g[i]))continue;
+ if(new Set(q.map(i=>(R(i)/3|0)*3+(Cc(i)/3|0))).size!=2)continue;
+ for(const f of q){const o=q.filter(i=>i!=f),m=C[o[0]];if(pc(m)!=2||o.some(i=>C[i]!=m)||(C[f]&m)!=m||C[f]==m)continue;
+  return{tech:'ur',inv:q,rem:bits(m).map(d=>[f,d])}}}return null}};
+function elim(C,g,w){let r;if(FX[w]&&(r=FX[w](C,g)))return r;
  for(const u of U)for(let d=1;d<=9;d++){const cs=u.filter(i=>!g[i]&&C[i]>>d&1);if(cs.length<2||cs.length>3)continue;
   for(const v of U)if(v!=u&&cs.every(i=>v.includes(i))){const rem=v.filter(i=>!u.includes(i)&&!g[i]&&C[i]>>d&1).map(i=>[i,d]);if(rem.length)return{tech:U.indexOf(u)>17?'point':'claim',inv:cs,rem}}}
  for(const n of[2,3])for(const u of U){const cs=u.filter(i=>!g[i]&&C[i]);
@@ -79,8 +92,9 @@ function elim(C,g){let r;
   r=combos(bs,n,s=>{const cov=new Set();s.forEach(k=>L(k).forEach(i=>cov.add(t?R(i):Cc(i))));if(cov.size!=n)return;const rem=[];
    for(const c of cov)for(let k=0;k<9;k++)if(!s.includes(k)){const i=t?c*9+k:k*9+c;if(!g[i]&&C[i]>>d&1)rem.push([i,d])}
    if(rem.length)return{tech:'fish'+n,inv:s.flatMap(L),rem}});if(r)return r}
+ for(const f of['xy','xyz','ur'])if(r=FX[f](C,g))return r;
  return null}
-const lvlOf=t=>/^fish/.test(t)?3:(t=='naked'||t=='hidden')?1:2;
+const lvlOf=t=>/^fish|^xy|^ur/.test(t)?3:(t=='naked'||t=='hidden')?1:2;
 function grade(g0){const g=[...g0],C=cand(g);let l=1;for(;;){if(g.every(x=>x))return l;let s=single(C,g);if(s){put(C,g,s.cell,s.val);continue}s=elim(C,g);if(!s)return 9;l=Math.max(l,lvlOf(s.tech));s.rem.forEach(([i,d])=>C[i]&=~(1<<d))}}
 function mk(tc){const s=Array(81).fill(0);fill(s);const g=[...s];let n=81;for(const i of sh([...Array(81).keys()])){if(n<=tc)break;const v=g[i];g[i]=0;if(count([...g])!=1)g[i]=v;else n--}return{g,s}}
 const CL={easy:[40,l=>l==1],medium:[34,l=>l==1],hard:[30,l=>l==2],expert:[25,l=>l>=2],nightmare:[22,l=>l>=3]};
@@ -89,7 +103,7 @@ function hint(cur,sol,notes){const gg=cur.map((v,i)=>v==sol[i]?v:0);
  const run=C=>{const w=[...gg];let last=null;for(let k=0;k<300;k++){const s=single(C,w);if(s)return last?{cell:s.cell,val:s.val,tech:last.tech,inv:last.inv}:s;const e=elim(C,w);if(!e)return null;e.rem.forEach(([i,d])=>C[i]&=~(1<<d));last=e}return null};
  const r=run(cand(gg).map((m,i)=>notes[i]&&!gg[i]?((m&notes[i])||m):m));
  return r&&r.val==sol[r.cell]?r:run(cand(gg))}
-function example(k){for(let a=0;a<80;a++){const{g}=mk(26),C=cand(g);for(let n=0;n<200;n++){let s=single(C,g);if(s){if(s.tech==k)return{g:[...g],C:[...C],s};put(C,g,s.cell,s.val);continue}s=elim(C,g);if(!s)break;if(s.tech==k)return{g:[...g],C:[...C],s};s.rem.forEach(([i,d])=>C[i]&=~(1<<d))}}return null}
+function example(k){const hd=FX[k];for(let a=0;a<(hd?150:80);a++){const{g}=mk(hd?24:26),C=cand(g);for(let n=0;n<200;n++){let s=single(C,g);if(s){if(s.tech==k)return{g:[...g],C:[...C],s};put(C,g,s.cell,s.val);continue}s=elim(C,g,k);if(!s)break;if(s.tech==k)return{g:[...g],C:[...C],s};s.rem.forEach(([i,d])=>C[i]&=~(1<<d))}}return null}
 
 /* ---------- State ---------- */
 let S=JSON.parse(localStorage.getItem('sdk')||'{}');S.stats=S.stats||{};S.set=S.set||{dark:matchMedia('(prefers-color-scheme:dark)').matches,hue:210};
@@ -172,9 +186,9 @@ const LS=[['Einsteiger-Strategien',[
 ['fish2','X-Wing','Eine Zahl hat in zwei Zeilen jeweils genau zwei Kandidaten, und beide liegen in denselben zwei Spalten. Dann kann die Zahl in diesen Spalten in allen anderen Zeilen gestrichen werden (auch mit vertauschten Zeilen und Spalten).'],
 ['fish3','Swordfish','Wie X-Wing, nur mit drei Zeilen und drei Spalten: Die Kandidaten einer Zahl liegen in drei Zeilen ausschließlich in denselben drei Spalten. In diesen Spalten fällt die Zahl in allen anderen Zeilen weg.'],
 ['fish4','Jellyfish','Wie Swordfish, aber mit vier Zeilen und vier Spalten.'],
-[null,'XY-Wing','Ein Pivot-Feld mit den Kandidaten XY sieht zwei Felder mit XZ und YZ. Egal was im Pivot steht – Z landet in einem der beiden Flügel. Felder, die beide Flügel sehen, verlieren Z.'],
-[null,'XYZ-Wing','Wie XY-Wing, aber das Pivot-Feld enthält XYZ. Nur Felder, die Pivot und beide Flügel sehen, verlieren den Kandidaten Z.'],
-[null,'Eindeutiges Rechteck','Vier Felder in zwei Blöcken, die dasselbe Zahlenpaar enthalten, würden zwei Lösungen erlauben. Da ein Sudoku eindeutig ist, lässt sich so ein Muster vermeiden und Kandidaten streichen.'],
+['xy','XY-Wing','Ein Pivot-Feld mit den Kandidaten XY sieht zwei Felder mit XZ und YZ. Egal was im Pivot steht – Z landet in einem der beiden Flügel. Felder, die beide Flügel sehen, verlieren Z.'],
+['xyz','XYZ-Wing','Wie XY-Wing, aber das Pivot-Feld enthält XYZ. Nur Felder, die Pivot und beide Flügel sehen, verlieren den Kandidaten Z.'],
+['ur','Eindeutiges Rechteck','Vier Felder in zwei Blöcken bilden ein Rechteck. Enthalten drei Ecken nur dasselbe Zahlenpaar, dürfte die vierte Ecke nicht ebenfalls nur dieses Paar haben – sonst gäbe es zwei Lösungen. Also werden beide Zahlen des Paars aus der vierten Ecke gestrichen (Typ 1).'],
 [null,'Alternierende Ketten','Verbinde Kandidaten abwechselnd über starke und schwache Verbindungen. Daraus folgt, dass bestimmte Kandidaten außerhalb der Kette nicht wahr sein können.']]]];
 
 /* ---------- Render ---------- */

@@ -219,7 +219,7 @@ function lesson(){const[k,n,t]=sub,w=E('div'),tr=E('div','tr');tr.append(E('h2',
 function stats(){const w=E('div','','<h2>Statistik</h2>');
  for(const k in LV){const s=S.stats[k];w.append(E('div','card',`<b>${LV[k]}</b><br>`+(s?`Abgeschlossen: ${s.n}<br>Ø Fehler: ${(s.e/s.n).toFixed(1)}<br>Ø Zeit: ${fmt(Math.round(s.t/s.n))}<br>Bestzeit: ${fmt(s.b)}`:'<span class="mut">Noch kein Spiel abgeschlossen</span>')))}return w}
 function settings(){const w=E('div','','<h2>Einstellungen</h2>');
- w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('‹ Zurück',()=>go('menu'),'s sm'),E('p','mut','Version: update5'));return w}
+ w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('‹ Zurück',()=>go('menu'),'s sm'),E('p','mut','Version: update6'));return w}
 function profil(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Profil'),E('p','mut','Dein Name (erscheint im Hauptmenü)'));
  const i=E('input');i.value=S.set.name||'';i.placeholder='Name';i.maxLength=24;i.oninput=()=>{S.set.name=i.value.trim();save()};w.append(i);return w}
 function design(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Design'),
@@ -264,21 +264,24 @@ function render(){acc(S.set.hue);document.documentElement.dataset.theme=S.set.da
  const fa=m.fontBoundingBoxAscent,fd=m.fontBoundingBoxDescent,gc=(100-fa-fd)/2+fa-(m.actualBoundingBoxAscent-m.actualBoundingBoxDescent)/2,dy=(50-gc)/100*2,st=document.documentElement.style;
  st.setProperty('--dt',Math.max(0,dy)+'em');st.setProperty('--db',Math.max(0,-dy)+'em')}catch(e){}})();
 /* ---------- Android-Zurück-Taste ---------- */
-let armed=false,leaving=false,exitDlg=null;
-const arm=()=>{if(armed)return;armed=true;history.replaceState({i:0},'');history.pushState({i:1},'')};
-['click','pointerup','touchend'].forEach(t=>document.addEventListener(t,arm,true));
+const K=4;let armed=false,leaving=false,exitDlg=null,cur=0;
+const arm=()=>{if(armed)return;armed=true;history.replaceState({i:0},'');for(let i=1;i<=K;i++)history.pushState({i},'');cur=K};
+const top=()=>{if(armed&&!leaving&&cur<K)history.go(K-cur)};
+['click','pointerup','touchend'].forEach(t=>document.addEventListener(t,()=>{arm();top()},true));
 const BK={lesson:'lessons',profil:'settings',design:'settings',settings:'menu',lessons:'menu',stats:'menu',game:'menu'};
 function back(){if(tab=='menu'){if(showLv){showLv=false;render();return 1}return 0}go(BK[tab]);return 1}
 const closeExit=()=>{if(exitDlg)exitDlg.remove();exitDlg=null};
 function toast(t){const e=E('div','toast',t);document.body.append(e);setTimeout(()=>e.remove(),3500)}
 function askExit(){if(exitDlg)return;const o=E('div','ov'),d=E('div','dl','<h2>App schließen?</h2><p>Die App wird beendet. Dein Spielstand bleibt gespeichert.</p>');
  d.append(btn('Beenden',()=>{leaving=true;closeExit();window.close();
-  setTimeout(()=>{if(document.hidden)return;history.go(-1);setTimeout(()=>{leaving=false;armed=false},400);toast('Drücke ‹ noch einmal, um die App zu schließen.')},350)}),btn('Abbrechen',closeExit,'s'));
+  setTimeout(()=>{if(document.hidden)return;history.go(-cur);cur=0;setTimeout(()=>{leaving=false},500);toast('Drücke ‹ noch einmal, um die App zu schließen.')},350)}),btn('Abbrechen',closeExit,'s'));
  o.append(d);document.body.append(o);exitDlg=o}
-addEventListener('popstate',()=>{if(leaving||!armed)return;
+addEventListener('popstate',()=>{if(leaving||!armed)return;const i=history.state&&history.state.i;if(i==null)return;
+ if(i>=cur){cur=i;return}
+ cur=i;
  if(exitDlg)closeExit();else if(info){info=false;render()}
  else{const o=document.querySelector('body>.ov');if(o){o.remove();go('menu')}else if(!back())askExit()}
- if(!history.state||history.state.i!=1)history.pushState({i:1},'')});
+ top()});
 $('#gear').onclick=()=>go('settings');$('#back').onclick=()=>go('lessons');
 setInterval(()=>{if(tab=='game'&&S.game&&!document.hidden){S.game.t++;const e=$('#tm');if(e)e.textContent=fmt(S.game.t);if(S.game.t%10==0)save()}},1000);
 render();

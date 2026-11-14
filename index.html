@@ -9,8 +9,8 @@
 [data-theme=dark]{--bg:#111318;--fg:#eceef2;--card:#1c1f26;--ln:#3a3f4a;--mut:#9aa1ad}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px system-ui,sans-serif;height:100dvh;display:flex;flex-direction:column}
-#hd{display:flex;justify-content:flex-end;padding:calc(env(safe-area-inset-top) + 2px) 10px 0}
-#gear{border:0;background:none;color:var(--fg);font-size:30px;line-height:1;padding:6px 10px}#gear.on{color:var(--acc)}
+#hd{display:flex;justify-content:space-between;align-items:center;padding:calc(env(safe-area-inset-top) + 2px) 10px 0}
+#gear,#back{border:0;background:none;color:var(--fg);font-size:30px;line-height:1;padding:6px 10px}#gear.on{color:var(--acc)}#back{font-size:36px;visibility:hidden}
 #main{flex:1;overflow:auto;padding:6px 14px 14px;max-width:520px;width:100%;margin:0 auto}
 nav{display:flex;background:var(--bg);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
 nav button{flex:1;padding:14px 2px;border:0;background:none;color:var(--mut);font-size:13px}nav button.on{color:var(--acc);font-weight:700}
@@ -20,11 +20,13 @@ nav button{flex:1;padding:14px 2px;border:0;background:none;color:var(--mut);fon
 .btn.sm{padding:12px 4px;font-size:15px;margin:4px 0}
 input{width:100%;padding:14px;font-size:18px;border-radius:12px;border:1px solid var(--ln);background:var(--card);color:var(--fg)}
 h1{text-align:center;font-size:42px;margin:24px 0 20px}h2{margin:8px 0}.mut{color:var(--mut)}
+.tr{display:flex;justify-content:space-between;align-items:center}.ds{font-size:15px;margin:2px 0 6px}
+.inf{width:36px;height:36px;border-radius:50%;border:2px solid var(--acc);background:none;color:var(--acc);font:italic 700 20px serif}
 .top{display:flex;justify-content:space-between;font-size:15px}
 .brd{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));grid-template-rows:repeat(9,minmax(0,1fr));aspect-ratio:1;border:2px solid var(--fg);background:var(--card);margin:8px 0}
 .c{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;border:.5px solid var(--ln);font-size:min(7vw,32px);user-select:none;overflow:hidden}
 .c.br{border-right:2px solid var(--fg)}.c.bb{border-bottom:2px solid var(--fg)}
-.c.p{background:color-mix(in srgb,var(--acc) 9%,transparent)}.c.same{background:var(--accl)}
+.c.un{background:color-mix(in srgb,var(--acc) 14%,transparent)}.c.p{background:color-mix(in srgb,var(--acc) 9%,transparent)}.c.same{background:var(--accl)}
 .c.g{font-weight:700}.c.u{color:var(--acc)}
 .c.sel{background:var(--acc)!important;color:#fff!important}
 .c.h3{background:#ffd98a!important;color:#000!important}.c.h1{background:#f5a524!important;color:#000!important}
@@ -43,7 +45,7 @@ h1{text-align:center;font-size:42px;margin:24px 0 20px}h2{margin:8px 0}.mut{colo
 .th{position:absolute;width:30px;height:30px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 4px #0008;transform:translate(-50%,-50%)}
 .fin{position:absolute;left:50%;top:50%;width:38%;aspect-ratio:1;transform:translate(-50%,-50%);border:0;border-radius:50%;color:#fff;font-size:18px;font-weight:700}
 </style></head><body>
-<header id="hd"><button id="gear" aria-label="Einstellungen">⚙&#xFE0E;</button></header>
+<header id="hd"><button id="back" aria-label="Zurück">‹</button><button id="gear" aria-label="Einstellungen">⚙&#xFE0E;</button></header>
 <div id="main"></div>
 <nav id="nav"></nav>
 <script>
@@ -59,7 +61,7 @@ const bits=m=>{const a=[];for(let d=1;d<=9;d++)if(m>>d&1)a.push(d);return a};
 const sh=a=>{for(let i=a.length;i>1;){const j=Math.random()*i--|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const fmt=s=>(s/60|0)+':'+String(s%60).padStart(2,'0');
 const LV={easy:'Einfach',medium:'Mittel',hard:'Schwer',expert:'Experte',nightmare:'Alptraum'};
-const T={naked:'Nackter Einer',hidden:'Versteckter Einer',point:'Block-Zeilen-Ausschluss',claim:'Zeilen-Block-Ausschluss',nakedN2:'Nacktes Paar',nakedN3:'Nacktes Tripel',hiddenN2:'Verstecktes Paar',hiddenN3:'Verstecktes Tripel',fish2:'X-Wing',fish3:'Swordfish',fish4:'Jellyfish',xy:'XY-Wing',xyz:'XYZ-Wing',ur:'Eindeutiges Rechteck'};
+const T={naked:'Nackter Einer',hidden:'Versteckter Einer',point:'Block-Zeilen-Ausschluss',claim:'Zeilen-Block-Ausschluss',nakedN2:'Nacktes Paar',nakedN3:'Nacktes Tripel',hiddenN2:'Verstecktes Paar',hiddenN3:'Verstecktes Tripel',fish2:'X-Wing',fish3:'Swordfish',fish4:'Jellyfish',xy:'XY-Wing',xyz:'XYZ-Wing',ur:'Eindeutiges Rechteck',chain:'Alternierende Kette'};
 
 /* ---------- Solver / Generator ---------- */
 function mrv(g){let b=-1,bm=0,bc=10;for(let i=0;i<81;i++)if(!g[i]){let m=0x3fe;for(const j of P[i])m&=~(1<<g[j]);const n=pc(m);if(n<bc){bc=n;b=i;bm=m;if(n<2)break}}return[b,bm]}
@@ -69,54 +71,82 @@ const cand=g=>g.map((v,i)=>{if(v)return 0;let m=0x3fe;for(const j of P[i])m&=~(1
 const put=(C,g,i,v)=>{g[i]=v;C[i]=0;for(const j of P[i])C[j]&=~(1<<v)};
 function combos(a,n,f,s=0,cur=[]){if(cur.length==n)return f(cur);for(let i=s;i<a.length;i++){const r=combos(a,n,f,i+1,[...cur,a[i]]);if(r)return r}}
 function single(C,g){
- for(let i=0;i<81;i++)if(!g[i]&&pc(C[i])==1){const v=bits(C[i])[0],inv=[];for(let d=1;d<=9;d++)if(d!=v){const j=P[i].find(j=>g[j]==d);if(j!=null)inv.push(j)}return{cell:i,val:v,tech:'naked',inv}}
- for(const u of U)for(let d=1;d<=9;d++){const cs=u.filter(i=>!g[i]&&C[i]>>d&1);if(cs.length==1){const inv=[];for(const i of u)if(i!=cs[0]&&!g[i]){const j=P[i].find(j=>g[j]==d&&!u.includes(j));if(j!=null&&!inv.includes(j))inv.push(j)}return{cell:cs[0],val:d,tech:'hidden',inv}}}
+ for(let i=0;i<81;i++)if(!g[i]&&pc(C[i])==1){const v=bits(C[i])[0],inv=[],ds=[];for(let d=1;d<=9;d++)if(d!=v){const j=P[i].find(j=>g[j]==d);if(j!=null){inv.push(j);ds.push(d)}}return{cell:i,val:v,tech:'naked',inv,ds}}
+ for(let ui=0;ui<27;ui++){const u=U[ui];for(let d=1;d<=9;d++){const cs=u.filter(i=>!g[i]&&C[i]>>d&1);if(cs.length==1){const inv=[],why=[];
+  for(const i of u)if(i!=cs[0]&&!g[i]){const by=P[i].filter(j=>g[j]==d);by.forEach(j=>{if(!inv.includes(j))inv.push(j)});why.push([i,by])}
+  return{cell:cs[0],val:d,d,tech:'hidden',u:ui,inv,why}}}}
  return null}
-const FX={
+const mkPC=pt=>(C,g)=>{for(let ui=0;ui<27;ui++){if((ui>17)!=!!pt)continue;const u=U[ui];for(let d=1;d<=9;d++){const cs=u.filter(i=>!g[i]&&C[i]>>d&1);if(cs.length<2||cs.length>3)continue;
+ for(let vi=0;vi<27;vi++){const v=U[vi];if(vi!=ui&&cs.every(i=>v.includes(i))){const rem=v.filter(i=>!u.includes(i)&&!g[i]&&C[i]>>d&1).map(i=>[i,d]);if(rem.length)return{tech:pt?'point':'claim',u:ui,v:vi,d,inv:cs,rem}}}}}return null};
+const mkN=n=>(C,g)=>{for(let ui=0;ui<27;ui++){const cs=U[ui].filter(i=>!g[i]&&C[i]);
+ const r=combos(cs.filter(i=>pc(C[i])<=n),n,s=>{const m=s.reduce((a,i)=>a|C[i],0);if(pc(m)!=n)return;const rem=[];cs.forEach(i=>{if(!s.includes(i))bits(C[i]&m).forEach(d=>rem.push([i,d]))});if(rem.length)return{tech:'nakedN'+n,u:ui,dg:bits(m),inv:s,rem}});if(r)return r}return null};
+const mkH=n=>(C,g)=>{for(let ui=0;ui<27;ui++){const cs=U[ui].filter(i=>!g[i]&&C[i]),cd={};for(let d=1;d<=9;d++){const x=cs.filter(i=>C[i]>>d&1);if(x.length>=2&&x.length<=n)cd[d]=x}
+ const r=combos(Object.keys(cd),n,s=>{const cells=[...new Set(s.flatMap(d=>cd[d]))];if(cells.length!=n)return;const mm=s.reduce((a,d)=>a|(1<<d),0),rem=[];cells.forEach(i=>bits(C[i]&~mm).forEach(d=>rem.push([i,d])));if(rem.length)return{tech:'hiddenN'+n,u:ui,dg:s.map(Number),inv:cells,rem}});if(r)return r}return null};
+const mkF=n=>(C,g)=>{for(let d=1;d<=9;d++)for(const t of[0,1]){const L=k=>U[t*9+k].filter(i=>!g[i]&&C[i]>>d&1),bs=[];
+ for(let k=0;k<9;k++){const l=L(k).length;if(l>=2&&l<=n)bs.push(k)}
+ const r=combos(bs,n,s=>{const cov=new Set();s.forEach(k=>L(k).forEach(i=>cov.add(t?R(i):Cc(i))));if(cov.size!=n)return;const rem=[];
+  for(const c of cov)for(let k=0;k<9;k++)if(!s.includes(k)){const i=t?c*9+k:k*9+c;if(!g[i]&&C[i]>>d&1)rem.push([i,d])}
+  if(rem.length)return{tech:'fish'+n,d,t,bs:s,cov:[...cov].sort((a,b)=>a-b),inv:s.flatMap(L),rem}});if(r)return r}return null};
+const FX={point:mkPC(1),claim:mkPC(0),nakedN2:mkN(2),hiddenN2:mkH(2),nakedN3:mkN(3),hiddenN3:mkH(3),fish2:mkF(2),fish3:mkF(3),fish4:mkF(4),
 xy(C,g){for(let p=0;p<81;p++){if(g[p]||pc(C[p])!=2)continue;const ws=P[p].filter(i=>!g[i]&&pc(C[i])==2);
  for(const a of ws)for(const b of ws){if(b<=a)continue;const sa=C[a]&C[p],sb=C[b]&C[p],za=C[a]&~C[p],zb=C[b]&~C[p];
   if(pc(sa)!=1||pc(sb)!=1||sa==sb||pc(za)!=1||za!=zb)continue;const z=bits(za)[0];
-  const rem=P[a].filter(i=>i!=p&&P[b].includes(i)&&!g[i]&&C[i]>>z&1).map(i=>[i,z]);if(rem.length)return{tech:'xy',inv:[p,a,b],rem}}}return null},
+  const rem=P[a].filter(i=>i!=p&&P[b].includes(i)&&!g[i]&&C[i]>>z&1).map(i=>[i,z]);if(rem.length)return{tech:'xy',dg:[bits(sa)[0],bits(sb)[0],z],inv:[p,a,b],rem}}}return null},
 xyz(C,g){for(let p=0;p<81;p++){if(g[p]||pc(C[p])!=3)continue;const ws=P[p].filter(i=>!g[i]&&pc(C[i])==2&&(C[i]&~C[p])==0);
  for(const a of ws)for(const b of ws){if(b<=a||(C[a]|C[b])!=C[p]||pc(C[a]&C[b])!=1)continue;const z=bits(C[a]&C[b])[0];
-  const rem=P[p].filter(i=>P[a].includes(i)&&P[b].includes(i)&&!g[i]&&C[i]>>z&1).map(i=>[i,z]);if(rem.length)return{tech:'xyz',inv:[p,a,b],rem}}}return null},
+  const rem=P[p].filter(i=>P[a].includes(i)&&P[b].includes(i)&&!g[i]&&C[i]>>z&1).map(i=>[i,z]);if(rem.length)return{tech:'xyz',z,pd:bits(C[p]),ad:bits(C[a]),bd:bits(C[b]),inv:[p,a,b],rem}}}return null},
 ur(C,g){for(let r1=0;r1<9;r1++)for(let r2=r1+1;r2<9;r2++)for(let c1=0;c1<9;c1++)for(let c2=c1+1;c2<9;c2++){
  const q=[r1*9+c1,r1*9+c2,r2*9+c1,r2*9+c2];if(q.some(i=>g[i]))continue;
  if(new Set(q.map(i=>(R(i)/3|0)*3+(Cc(i)/3|0))).size!=2)continue;
  for(const f of q){const o=q.filter(i=>i!=f),m=C[o[0]];if(pc(m)!=2||o.some(i=>C[i]!=m)||(C[f]&m)!=m||C[f]==m)continue;
-  return{tech:'ur',inv:q,rem:bits(m).map(d=>[f,d])}}}return null}};
-function elim(C,g,w){let r;if(FX[w]&&(r=FX[w](C,g)))return r;
- for(const u of U)for(let d=1;d<=9;d++){const cs=u.filter(i=>!g[i]&&C[i]>>d&1);if(cs.length<2||cs.length>3)continue;
-  for(const v of U)if(v!=u&&cs.every(i=>v.includes(i))){const rem=v.filter(i=>!u.includes(i)&&!g[i]&&C[i]>>d&1).map(i=>[i,d]);if(rem.length)return{tech:U.indexOf(u)>17?'point':'claim',inv:cs,rem}}}
- for(const n of[2,3])for(const u of U){const cs=u.filter(i=>!g[i]&&C[i]);
-  r=combos(cs.filter(i=>pc(C[i])<=n),n,s=>{const m=s.reduce((a,i)=>a|C[i],0);if(pc(m)!=n)return;const rem=[];cs.forEach(i=>{if(!s.includes(i))bits(C[i]&m).forEach(d=>rem.push([i,d]))});if(rem.length)return{tech:'nakedN'+n,inv:s,rem}});if(r)return r;
-  const cd={};for(let d=1;d<=9;d++){const x=cs.filter(i=>C[i]>>d&1);if(x.length>=2&&x.length<=n)cd[d]=x}
-  r=combos(Object.keys(cd),n,s=>{const cells=[...new Set(s.flatMap(d=>cd[d]))];if(cells.length!=n)return;const mk=s.reduce((a,d)=>a|(1<<d),0),rem=[];cells.forEach(i=>bits(C[i]&~mk).forEach(d=>rem.push([i,d])));if(rem.length)return{tech:'hiddenN'+n,inv:cells,rem}});if(r)return r}
- for(const n of[2,3,4])for(let d=1;d<=9;d++)for(const t of[0,1]){
-  const L=k=>U[t*9+k].filter(i=>!g[i]&&C[i]>>d&1),bs=[];
-  for(let k=0;k<9;k++){const l=L(k).length;if(l>=2&&l<=n)bs.push(k)}
-  r=combos(bs,n,s=>{const cov=new Set();s.forEach(k=>L(k).forEach(i=>cov.add(t?R(i):Cc(i))));if(cov.size!=n)return;const rem=[];
-   for(const c of cov)for(let k=0;k<9;k++)if(!s.includes(k)){const i=t?c*9+k:k*9+c;if(!g[i]&&C[i]>>d&1)rem.push([i,d])}
-   if(rem.length)return{tech:'fish'+n,inv:s.flatMap(L),rem}});if(r)return r}
- for(const f of['xy','xyz','ur'])if(r=FX[f](C,g))return r;
- return null}
-const lvlOf=t=>/^fish|^xy|^ur/.test(t)?3:(t=='naked'||t=='hidden')?1:2;
+  return{tech:'ur',f,dg:bits(m),inv:q,rem:bits(m).map(d=>[f,d])}}}return null},
+chain(C,g){for(let d=1;d<=9;d++){const has=i=>!g[i]&&C[i]>>d&1,st={};
+ for(const u of U){const cs=u.filter(has);if(cs.length==2){(st[cs[0]]=st[cs[0]]||[]).push(cs[1]);(st[cs[1]]=st[cs[1]]||[]).push(cs[0])}}
+ const dfs=(ch,dep)=>{const a=ch[0],e=ch[ch.length-1];for(const y of P[e]){if(!has(y)||ch.includes(y)||!st[y])continue;for(const z of st[y]){if(ch.includes(z))continue;const nc=[...ch,y,z];
+  const rem=P[a].filter(i=>P[z].includes(i)&&has(i)&&!nc.includes(i)).map(i=>[i,d]);if(rem.length)return{tech:'chain',d,ends:[a,z],inv:nc,rem};
+  if(dep<3){const r=dfs(nc,dep+1);if(r)return r}}}return null};
+ for(const a in st)for(const b of st[a]){const r=dfs([+a,b],1);if(r)return r}}return null}};
+const ORD=['point','claim','nakedN2','hiddenN2','nakedN3','hiddenN3','fish2','fish3','fish4','xy','xyz','ur'];
+function elim(C,g,w,ch){if(w)return FX[w]?FX[w](C,g):null;for(const k of ORD){const r=FX[k](C,g);if(r)return r}return ch?FX.chain(C,g):null}
+const lvlOf=t=>/^fish|^xy|^ur|^chain/.test(t)?3:(t=='naked'||t=='hidden')?1:2;
 function grade(g0){const g=[...g0],C=cand(g);let l=1;for(;;){if(g.every(x=>x))return l;let s=single(C,g);if(s){put(C,g,s.cell,s.val);continue}s=elim(C,g);if(!s)return 9;l=Math.max(l,lvlOf(s.tech));s.rem.forEach(([i,d])=>C[i]&=~(1<<d))}}
 function mk(tc){const s=Array(81).fill(0);fill(s);const g=[...s];let n=81;for(const i of sh([...Array(81).keys()])){if(n<=tc)break;const v=g[i];g[i]=0;if(count([...g])!=1)g[i]=v;else n--}return{g,s}}
 const CL={easy:[40,l=>l==1],medium:[34,l=>l==1],hard:[30,l=>l==2],expert:[25,l=>l>=2],nightmare:[22,l=>l>=3]};
 function gen(k){const[tc,ok]=CL[k];let r;for(let a=0;a<25;a++){r=mk(tc);if(ok(grade(r.g)))break}return r}
+/* ---------- Erklärungen ---------- */
+const cn=i=>`Z${R(i)+1}/S${Cc(i)+1}`,BN=['oben links','oben Mitte','oben rechts','Mitte links','Mitte','Mitte rechts','unten links','unten Mitte','unten rechts'];
+const UN=u=>u<9?`Zeile ${u+1}`:u<18?`Spalte ${u-8}`:`Block ${BN[u-18]}`,dl=a=>a.join(', ');
+function explain(s){const t=s.tech,v=s.inv;
+ if(t=='naked')return `Im Feld ${cn(s.cell)} sind ${dl(s.ds)} schon in Zeile, Spalte oder Block vorhanden (markierte Zahlen). Übrig bleibt nur die ${s.val}.`;
+ if(t=='hidden')return `In ${UN(s.u)} passt die ${s.val} nur in ein Feld: ${cn(s.cell)}. Alle anderen freien Felder sind blockiert: `+s.why.map(([i,by])=>`${cn(i)} ${by.length?'durch die '+s.val+' in '+by.map(cn).join(' und '):'(durch frühere Ausschlüsse)'}`).join('; ')+'.';
+ if(t=='point'||t=='claim')return `In ${UN(s.u)} kann die ${s.d} nur in ${UN(s.v)} stehen (markierte Felder). Darum fällt sie in den übrigen Feldern von ${UN(s.v)} weg.`;
+ if(t[0]=='n'&&t[4]=='d')return `In ${UN(s.u)} enthalten diese ${v.length} Felder zusammen nur die Kandidaten ${dl(s.dg)}. Diese Zahlen müssen dort stehen und fallen in den übrigen Feldern von ${UN(s.u)} weg.`;
+ if(t[0]=='h'&&t[6]=='N')return `In ${UN(s.u)} kommen die Zahlen ${dl(s.dg)} nur in diesen ${v.length} Feldern vor. Alle anderen Kandidaten dieser Felder fallen weg.`;
+ if(t[0]=='f'){const b=s.t?'Spalten':'Zeilen',c=s.t?'Zeilen':'Spalten';return `Die ${s.d} liegt in den ${b} ${dl(s.bs.map(x=>x+1))} nur in den ${c} ${dl(s.cov.map(x=>x+1))} (markierte Felder). Darum fällt die ${s.d} in diesen ${c} in allen anderen ${b} weg.`}
+ if(t=='xy'){const[x,y,z]=s.dg;return `Pivot ${cn(v[0])} (${x}/${y}) sieht ${cn(v[1])} (${x}/${z}) und ${cn(v[2])} (${y}/${z}). Ist der Pivot ${x}, wird der erste Flügel zur ${z}; ist er ${y}, der zweite. Felder, die beide Flügel sehen, können keine ${z} sein.`}
+ if(t=='xyz')return `Pivot ${cn(v[0])} (${dl(s.pd)}) mit den Flügeln ${cn(v[1])} (${dl(s.ad)}) und ${cn(v[2])} (${dl(s.bd)}). Die ${s.z} steht immer im Pivot oder in einem Flügel. Felder, die alle drei sehen, können keine ${s.z} sein.`;
+ if(t=='ur')return `Die vier markierten Felder bilden ein Rechteck in zwei Blöcken; drei Ecken enthalten nur ${dl(s.dg)}. Stünden diese Zahlen auch in ${cn(s.f)}, gäbe es zwei Lösungen – bei einem eindeutigen Sudoku unmöglich. Darum entfallen ${dl(s.dg)} in ${cn(s.f)}.`;
+ if(t=='chain')return `Kette für die ${s.d}: `+v.map((c,i)=>(i?(i%2?' = ':' – '):'')+cn(c)).join('')+`. „=“ ist eine starke Verbindung (genau eines der beiden Felder enthält die ${s.d}), „–“ eine schwache (höchstens eines). Daher enthält ${cn(s.ends[0])} oder ${cn(s.ends[1])} die ${s.d}. Felder, die beide Enden sehen, können keine ${s.d} sein.`;
+ return ''}
 function hint(cur,sol,notes){const gg=cur.map((v,i)=>v==sol[i]?v:0);
- const run=C=>{const w=[...gg];let last=null;for(let k=0;k<300;k++){const s=single(C,w);if(s)return last?{cell:s.cell,val:s.val,tech:last.tech,inv:last.inv}:s;const e=elim(C,w);if(!e)return null;e.rem.forEach(([i,d])=>C[i]&=~(1<<d));last=e}return null};
- const r=run(cand(gg).map((m,i)=>notes[i]&&!gg[i]?((m&notes[i])||m):m));
- return r&&r.val==sol[r.cell]?r:run(cand(gg))}
-function example(k){const hd=FX[k];for(let a=0;a<(hd?150:80);a++){const{g}=mk(hd?24:26),C=cand(g);for(let n=0;n<200;n++){let s=single(C,g);if(s){if(s.tech==k)return{g:[...g],C:[...C],s};put(C,g,s.cell,s.val);continue}s=elim(C,g,k);if(!s)break;if(s.tech==k)return{g:[...g],C:[...C],s};s.rem.forEach(([i,d])=>C[i]&=~(1<<d))}}return null}
+ const run=(C,nt)=>{const w=[...gg],steps=[];for(let k=0;k<300;k++){const s=single(C,w);
+  if(s){const r={...s,steps,nt};r.all=[...new Set([...steps.flatMap(x=>x.inv),...s.inv])];r.names=[...steps.map(x=>T[x.tech]),T[s.tech]];r.txt=[...steps,s].map(explain).join(' ');return r}
+  const e=elim(C,w,0,1);if(!e)return null;e.rem.forEach(([i,d])=>C[i]&=~(1<<d));steps.push(e)}return null};
+ let r=run(cand(gg),0);if(r&&r.val==sol[r.cell])return r;
+ r=run(cand(gg).map((m,i)=>notes[i]&&!gg[i]?((m&notes[i])||m):m),1);return r&&r.val==sol[r.cell]?r:null}
+const SLOW=['fish2','fish3','fish4','xy','xyz','ur','chain'];
+function example(k){const sg=k=='naked'||k=='hidden',slow=SLOW.includes(k),T0=Date.now();
+ for(let a=0;a<300&&Date.now()-T0<6000;a++){const{g}=mk(slow?23:26);
+  for(let n=0;n<81;n++){const C=cand(g),s=single(C,g);
+   if(!sg&&(!slow||!s)){const e=FX[k](C,g);if(e)return{g:[...g],C,s:e}}
+   if(!s)break;if(s.tech==k)return{g:[...g],C,s};g[s.cell]=s.val}}return null}
 
 /* ---------- State ---------- */
 let S=JSON.parse(localStorage.getItem('sdk')||'{}');S.stats=S.stats||{};S.set=S.set||{dark:matchMedia('(prefers-color-scheme:dark)').matches,hue:210};
 const save=()=>localStorage.setItem('sdk',JSON.stringify(S));
 const acc=h=>{const s=document.documentElement.style;s.setProperty('--acc',`hsl(${h} 75% 50%)`);s.setProperty('--accl',`hsl(${h} 75% 50%/.18)`)};
-let tab='intro',sub=null,sel=null,nm=false,showLv=false,msg='',ex,rev=false,lock=0,LL=0,hueT=null,mg=null,ms=null;
-const go=(t,s)=>{tab=t;sub=s||null;if(t=='lesson'){ex=undefined;rev=false}if(t!='design')hueT=null;render()};
+let tab='intro',sub=null,sel=null,nm=false,showLv=false,msg='',ex,rev=false,lock=0,LL=0,hueT=null,mg=null,ms=null,info=false;
+const go=(t,s)=>{tab=t;sub=s||null;if(t=='lesson'){ex=undefined;rev=false}if(t!='design')hueT=null;info=false;render()};
 const SUN='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-4px;margin-left:6px"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>';
 const MOON='<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--acc)" style="vertical-align:-4px;margin-left:6px"><path d="M20 14.5A8 8 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg>';
 
@@ -165,12 +195,13 @@ function win(){const G=S.game,s=S.stats[G.k]=S.stats[G.k]||{n:0,e:0,t:0,b:0};s.n
  const o=E('div','ov',`<div class="dl"><h2>Geschafft! 🎉</h2><p>${LV[G.k]} · ${fmt(G.t)} · ${G.err} Fehler</p></div>`);o.firstChild.append(btn('Hauptmenü',()=>{o.remove();go('menu')}));document.body.append(o)}
 function game(){const G=S.game,w=E('div');
  if(!G){w.append(E('h2','','Kein laufendes Spiel'),btn('Neues Spiel',()=>{showLv=true;go('menu')}));return w}
- const h=G.hint,st=h?h.st:0,sv=sel!=null?G.cur[sel]:0,hd=lock||sv;
+ if(G.hint&&!G.hint.names)G.hint=null;
+ const h=G.hint,st=h?h.st:0,sv=sel!=null?G.cur[sel]:0,hd=lock||sv||(h&&st>=3?h.val:0);
  w.append(E('div','top',`<b>${LV[G.k]}</b><span>Fehler: ${G.err}</span><span id="tm">${fmt(G.t)}</span>`));
  w.append(board({hd,v:i=>G.cur[i],m:i=>G.notes[i],f:i=>{sel=i;if(lock)act(i,lock,true);else render()},c:i=>{let c=G.p[i]?'g ':G.cur[i]?(G.cur[i]==G.sol[i]?'u ':'e '):'';
   if(sel!=null&&!lock){if(i==sel)c+='sel ';else if(P[sel].includes(i))c+='p '}
   if(hd&&G.cur[i]==hd)c+='same ';
-  if(h&&st>=3&&h.inv.includes(i))c+='h3 ';if(h&&st>=1&&i==h.cell)c+='h1 ';return c}}));
+  if(h&&st>=3&&h.u!=null&&h.tech=='hidden'&&U[h.u].includes(i))c+='un ';if(h&&st>=3&&h.all.includes(i))c+='h3 ';if(h&&st>=1&&i==h.cell)c+='h1 ';return c}}));
  const cnt=d=>G.cur.filter(x=>x==d).length,pad=E('div','pad');
  for(let d=1;d<=9;d++){const b=btn(d,()=>{if(Date.now()-LL<700)return;padTap(d)},'s sm'+(lock==d?' lk':''));let tm;
   b.onpointerdown=()=>{tm=setTimeout(()=>{LL=Date.now();lock=d;render()},450)};
@@ -178,21 +209,25 @@ function game(){const G=S.game,w=E('div');
  w.append(pad);
  const r=E('div','row'),u=btn('Rückgängig',undo,'s');u.disabled=!(G.hist&&G.hist.length);
  r.append(btn('Notizen',()=>{nm=!nm;render()},nm?'on s':'s'),btn('Löschen',erase,'s'),u,btn('Tipp',tipp,'s'));w.append(r);
- const tx=msg||(h?[,'Dieses Feld kann als Nächstes gelöst werden.','Strategie: '+T[h.tech],'Die markierten Felder sind für die Lösung wichtig. Ein weiterer Tipp löst das Feld.'][st]:'')||(lock?`Zahl-${lock}-Modus: Ein Tipp auf ein Feld trägt ${nm?'die Notiz ':'die '}${lock} ein. Zum Beenden unten die ${lock} antippen.`:'');
+ const tx=msg||(h?[,'Dieses Feld kann als Nächstes gelöst werden.','Strategie: '+h.names.join(' → '),(h.nt?'Anhand deiner Notizen: ':'')+h.txt+' (Z = Zeile, S = Spalte) Ein weiterer Tipp löst das Feld.'][st]:'')||(lock?`Zahl-${lock}-Modus: Ein Tipp auf ein Feld trägt ${nm?'die Notiz ':'die '}${lock} ein. Zum Beenden unten die ${lock} antippen.`:'');
  if(tx)w.append(E('div','ban',tx));return w}
 function lessons(){const w=E('div','','<h2>Lektionen</h2>');
  for(const[g,its]of LS){w.append(E('h3','mut',g));its.forEach(it=>w.append(btn(it[1],()=>go('lesson',it),'s')))}return w}
-function lesson(){const[k,n,t]=sub,w=E('div');w.append(btn('‹ Zurück',()=>go('lessons'),'s sm'),E('h2','',n),E('p','',t));
- if(!k){w.append(E('p','mut','Ein interaktives Beispiel für diese Strategie folgt in einem späteren Update.'));return w}
+function lesson(){const[k,n,t]=sub,w=E('div'),tr=E('div','tr');tr.append(E('h2','',n));w.append(tr,E('p','ds',t));
+ if(!k)return w;
  if(ex===undefined){w.append(E('p','mut','Beispiel wird gesucht…'));setTimeout(()=>{ex=example(k);render()},30);return w}
- const nw=btn('Neues Beispiel',()=>{ex=undefined;rev=false;render()},'s');
+ const nw=btn('Neues Beispiel',()=>{ex=undefined;rev=false;info=false;render()},'s');
  if(!ex){w.append(E('p','','Es wurde gerade kein Beispiel gefunden.'),nw);return w}
  const s=ex.s,pl=s.val!=null,rm=i=>s.rem?s.rem.filter(x=>x[0]==i).reduce((a,x)=>a|1<<x[1],0):0;
- w.append(board({v:i=>ex.g[i]||(rev&&pl&&i==s.cell?s.val:0),m:i=>ex.C[i],r:i=>rev&&!pl?rm(i):0,
-  c:i=>(pl&&i==s.cell?(rev?'u ':'h1 '):'')+(s.inv.includes(i)?'h3':'')}));
- w.append(E('div','ban',pl?(rev?`In Zeile ${R(s.cell)+1}, Spalte ${Cc(s.cell)+1} gehört die ${s.val}.`:'Orange: das Zielfeld. Gelb: Felder, die Zahlen ausschließen. Welche Zahl gehört hinein?')
-  :(rev?'Die rot durchgestrichenen Kandidaten können gestrichen werden.':'Gelb: die beteiligten Felder. Welche Kandidaten lassen sich streichen?')));
- const r=E('div','row');r.append(btn(rev?'Verbergen':'Auflösung zeigen',()=>{rev=!rev;render()},'s'),nw);w.append(r);return w}
+ const ib=E('button','inf','i');ib.onclick=()=>{info=true;render()};tr.append(ib);
+ const bd=board({hd:s.d,v:i=>ex.g[i]||(rev&&pl&&i==s.cell?s.val:0),m:i=>ex.C[i],r:i=>rev&&!pl?rm(i):0,
+  c:i=>((pl&&i==s.cell)||(s.ends&&s.ends.includes(i))?(rev&&pl?'u ':'h1 '):'')+(s.inv.includes(i)?'h3 ':'')+(s.u!=null&&U[s.u].includes(i)?'un':'')});
+ bd.style.cssText='max-width:min(100%,calc(100dvh - 340px));margin:6px auto';w.append(bd);
+ const r=E('div','row');r.append(btn(rev?'Verbergen':'Auflösung zeigen',()=>{rev=!rev;render()},'s'),nw);w.append(r);
+ if(info){const o=E('div','ov'),d=E('div','dl');d.style.textAlign='left';o.onclick=e=>{if(e.target==o){info=false;render()}};
+  const res=pl?(rev?`Ergebnis: In ${cn(s.cell)} gehört die ${s.val}.`:'Welche Zahl gehört in das orange Feld? „Auflösung zeigen“ verrät es.'):(rev?'Die rot durchgestrichenen Kandidaten fallen weg.':'Welche Kandidaten lassen sich streichen? „Auflösung zeigen“ verrät es.');
+  d.append(E('p','',explain(s)),E('p','',res),E('p','mut','Orange = Zielfeld bzw. Kettenenden, Gelb = beteiligte Felder, getönt = betrachtete Zeile/Spalte/Block. Z = Zeile, S = Spalte.'),btn('Schließen',()=>{info=false;render()}));o.append(d);w.append(o)}
+ return w}
 function stats(){const w=E('div','','<h2>Statistik</h2>');
  for(const k in LV){const s=S.stats[k];w.append(E('div','card',`<b>${LV[k]}</b><br>`+(s?`Abgeschlossen: ${s.n}<br>Ø Fehler: ${(s.e/s.n).toFixed(1)}<br>Ø Zeit: ${fmt(Math.round(s.t/s.n))}<br>Bestzeit: ${fmt(s.b)}`:'<span class="mut">Noch kein Spiel abgeschlossen</span>')))}return w}
 function settings(){const w=E('div','','<h2>Einstellungen</h2>');
@@ -227,7 +262,7 @@ const LS=[['Einsteiger-Strategien',[
 ['xy','XY-Wing','Ein Pivot-Feld mit den Kandidaten XY sieht zwei Felder mit XZ und YZ. Egal was im Pivot steht – Z landet in einem der beiden Flügel. Felder, die beide Flügel sehen, verlieren Z.'],
 ['xyz','XYZ-Wing','Wie XY-Wing, aber das Pivot-Feld enthält XYZ. Nur Felder, die Pivot und beide Flügel sehen, verlieren den Kandidaten Z.'],
 ['ur','Eindeutiges Rechteck','Vier Felder in zwei Blöcken bilden ein Rechteck. Enthalten drei Ecken nur dasselbe Zahlenpaar, dürfte die vierte Ecke nicht ebenfalls nur dieses Paar haben – sonst gäbe es zwei Lösungen. Also werden beide Zahlen des Paars aus der vierten Ecke gestrichen (Typ 1).'],
-[null,'Alternierende Ketten','Verbinde Kandidaten abwechselnd über starke und schwache Verbindungen. Daraus folgt, dass bestimmte Kandidaten außerhalb der Kette nicht wahr sein können.']]]];
+['chain','Alternierende Ketten','Eine Kette verbindet Felder einer Zahl abwechselnd über starke Verbindungen (in einer Einheit gibt es nur zwei Felder für die Zahl, genau eines davon enthält sie) und schwache Verbindungen (zwei Felder, die sich sehen, höchstens eines enthält sie). Beginnt und endet die Kette mit einer starken Verbindung, enthält mindestens ein Ende die Zahl. Felder, die beide Enden sehen, verlieren sie.']]]];
 
 /* ---------- Render ---------- */
 const SC={intro,menu,game,lessons,lesson,stats,settings,profil,design},NV=[['Hauptmenü','menu'],['Spiel','game'],['Lektionen','lessons'],['Statistik','stats']];
@@ -235,9 +270,9 @@ const OF={menu:'menu',game:'game',lessons:'lessons',lesson:'lessons',stats:'stat
 function render(){acc(S.set.hue);document.documentElement.dataset.theme=S.set.dark?'dark':'light';
  document.querySelector('meta[name=theme-color]').content=S.set.dark?'#111318':'#f6f7f9';
  const m=$('#main');m.innerHTML='';m.append(SC[tab]());
- $('#hd').style.display=$('#nav').style.display=tab=='intro'?'none':'';$('#gear').className=SET.includes(tab)?'on':'';
+ $('#hd').style.display=$('#nav').style.display=tab=='intro'?'none':'';$('#gear').className=SET.includes(tab)?'on':'';$('#back').style.visibility=tab=='lesson'?'visible':'hidden';
  const n=$('#nav');n.innerHTML='';NV.forEach(([t,k])=>{const b=E('button',OF[tab]==k?'on':'',t);b.onclick=()=>{showLv=false;go(k)};n.append(b)})}
-$('#gear').onclick=()=>go('settings');
+$('#gear').onclick=()=>go('settings');$('#back').onclick=()=>go('lessons');
 setInterval(()=>{if(tab=='game'&&S.game&&!document.hidden){S.game.t++;const e=$('#tm');if(e)e.textContent=fmt(S.game.t);if(S.game.t%10==0)save()}},1000);
 render();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');

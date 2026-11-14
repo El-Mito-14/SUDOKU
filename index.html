@@ -219,7 +219,7 @@ function lesson(){const[k,n,t]=sub,w=E('div'),tr=E('div','tr');tr.append(E('h2',
 function stats(){const w=E('div','','<h2>Statistik</h2>');
  for(const k in LV){const s=S.stats[k];w.append(E('div','card',`<b>${LV[k]}</b><br>`+(s?`Abgeschlossen: ${s.n}<br>Ø Fehler: ${(s.e/s.n).toFixed(1)}<br>Ø Zeit: ${fmt(Math.round(s.t/s.n))}<br>Bestzeit: ${fmt(s.b)}`:'<span class="mut">Noch kein Spiel abgeschlossen</span>')))}return w}
 function settings(){const w=E('div','','<h2>Einstellungen</h2>');
- w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('‹ Zurück',()=>go('menu'),'s sm'));return w}
+ w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('‹ Zurück',()=>go('menu'),'s sm'),E('p','mut','Version: update5'));return w}
 function profil(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Profil'),E('p','mut','Dein Name (erscheint im Hauptmenü)'));
  const i=E('input');i.value=S.set.name||'';i.placeholder='Name';i.maxLength=24;i.oninput=()=>{S.set.name=i.value.trim();save()};w.append(i);return w}
 function design(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Design'),
@@ -282,5 +282,5 @@ addEventListener('popstate',()=>{if(leaving||!armed)return;
 $('#gear').onclick=()=>go('settings');$('#back').onclick=()=>go('lessons');
 setInterval(()=>{if(tab=='game'&&S.game&&!document.hidden){S.game.t++;const e=$('#tm');if(e)e.textContent=fmt(S.game.t);if(S.game.t%10==0)save()}},1000);
 render();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+if('serviceWorker'in navigator){const had=navigator.serviceWorker.controller;let rl=0;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!rl){rl=1;location.reload()}});navigator.serviceWorker.register('sw.js')}
 </script></body></html>

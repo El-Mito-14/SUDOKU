@@ -219,7 +219,7 @@ function lesson(){const[k,n,t]=sub,w=E('div'),tr=E('div','tr');tr.append(E('h2',
 function stats(){const w=E('div','','<h2>Statistik</h2>');
  for(const k in LV){const s=S.stats[k];w.append(E('div','card',`<b>${LV[k]}</b><br>`+(s?`Abgeschlossen: ${s.n}<br>Ø Fehler: ${(s.e/s.n).toFixed(1)}<br>Ø Zeit: ${fmt(Math.round(s.t/s.n))}<br>Bestzeit: ${fmt(s.b)}`:'<span class="mut">Noch kein Spiel abgeschlossen</span>')))}return w}
 function settings(){const w=E('div','','<h2>Einstellungen</h2>');
- w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('‹ Zurück',()=>go('menu'),'s sm'),E('p','mut','Version: update6'));return w}
+ w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('‹ Zurück',()=>go('menu'),'s sm'),E('p','mut','Version: update7'));return w}
 function profil(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Profil'),E('p','mut','Dein Name (erscheint im Hauptmenü)'));
  const i=E('input');i.value=S.set.name||'';i.placeholder='Name';i.maxLength=24;i.oninput=()=>{S.set.name=i.value.trim();save()};w.append(i);return w}
 function design(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Design'),
@@ -266,8 +266,8 @@ function render(){acc(S.set.hue);document.documentElement.dataset.theme=S.set.da
 /* ---------- Android-Zurück-Taste ---------- */
 const K=4;let armed=false,leaving=false,exitDlg=null,cur=0;
 const arm=()=>{if(armed)return;armed=true;history.replaceState({i:0},'');for(let i=1;i<=K;i++)history.pushState({i},'');cur=K};
-const top=()=>{if(armed&&!leaving&&cur<K)history.go(K-cur)};
-['click','pointerup','touchend'].forEach(t=>document.addEventListener(t,()=>{arm();top()},true));
+const restore=()=>{if(armed&&!leaving&&cur<K)history.go(K-cur)};
+['click','pointerup','touchend'].forEach(t=>document.addEventListener(t,()=>{arm();restore()},true));
 const BK={lesson:'lessons',profil:'settings',design:'settings',settings:'menu',lessons:'menu',stats:'menu',game:'menu'};
 function back(){if(tab=='menu'){if(showLv){showLv=false;render();return 1}return 0}go(BK[tab]);return 1}
 const closeExit=()=>{if(exitDlg)exitDlg.remove();exitDlg=null};
@@ -281,7 +281,7 @@ addEventListener('popstate',()=>{if(leaving||!armed)return;const i=history.state
  cur=i;
  if(exitDlg)closeExit();else if(info){info=false;render()}
  else{const o=document.querySelector('body>.ov');if(o){o.remove();go('menu')}else if(!back())askExit()}
- top()});
+ restore()});
 $('#gear').onclick=()=>go('settings');$('#back').onclick=()=>go('lessons');
 setInterval(()=>{if(tab=='game'&&S.game&&!document.hidden){S.game.t++;const e=$('#tm');if(e)e.textContent=fmt(S.game.t);if(S.game.t%10==0)save()}},1000);
 render();

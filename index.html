@@ -33,11 +33,12 @@ h1{text-align:center;font-size:42px;margin:24px 0 20px}h2{margin:8px 0}.mut{colo
 .c.e{background:#e5484d!important;color:#fff!important;font-weight:700}.c.sel.e{box-shadow:inset 0 0 0 3px var(--fg)}
 .n{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));width:100%;height:100%;font-size:min(2.7vw,12px);line-height:1;color:var(--mut)}
 .n span{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}.n .r{color:#e5484d;text-decoration:line-through;font-weight:700}
-.n .k{background:var(--acc);color:#fff;border-radius:50%;font-weight:700}.c.sel .n .k{background:#fff;color:var(--acc)}
+.n .k{background:var(--acc);color:#fff;border-radius:50%;font-weight:700;height:100%;max-width:100%;aspect-ratio:1;justify-self:center;padding-top:var(--dt,0em);padding-bottom:var(--db,0em)}.c.sel .n .k{background:#fff;color:var(--acc)}
 .pad{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
 .row{display:flex;gap:6px}.row .btn{margin:8px 0;font-size:13px;padding:13px 2px}
 .ban{background:var(--accl);border-radius:12px;padding:10px 12px;margin-top:6px;min-height:42px}
 .card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:12px 14px;margin:8px 0}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#000d;color:#fff;padding:10px 16px;border-radius:20px;z-index:9;text-align:center}
 .ov{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;padding:24px}
 .dl{background:var(--card);border-radius:18px;padding:22px;width:100%;max-width:340px;text-align:center}
 .rw{position:relative;width:min(80vw,300px);aspect-ratio:1;margin:24px auto;touch-action:none}
@@ -145,7 +146,7 @@ function example(k){const sg=k=='naked'||k=='hidden',slow=SLOW.includes(k),T0=Da
 let S=JSON.parse(localStorage.getItem('sdk')||'{}');S.stats=S.stats||{};S.set=S.set||{dark:matchMedia('(prefers-color-scheme:dark)').matches,hue:210};
 const save=()=>localStorage.setItem('sdk',JSON.stringify(S));
 const acc=h=>{const s=document.documentElement.style;s.setProperty('--acc',`hsl(${h} 75% 50%)`);s.setProperty('--accl',`hsl(${h} 75% 50%/.18)`)};
-let tab='intro',sub=null,sel=null,nm=false,showLv=false,msg='',ex,rev=false,lock=0,LL=0,hueT=null,mg=null,ms=null,info=false;
+let tab='menu',sub=null,sel=null,nm=false,showLv=false,msg='',ex,rev=false,lock=0,LL=0,hueT=null,info=false;
 const go=(t,s)=>{tab=t;sub=s||null;if(t=='lesson'){ex=undefined;rev=false}if(t!='design')hueT=null;info=false;render()};
 const SUN='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-4px;margin-left:6px"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>';
 const MOON='<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--acc)" style="vertical-align:-4px;margin-left:6px"><path d="M20 14.5A8 8 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg>';
@@ -154,19 +155,6 @@ const MOON='<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--acc)" st
 function board(o){const b=E('div','brd');for(let i=0;i<81;i++){const r=R(i),q=Cc(i),c=E('div','c'+(q%3==2&&q<8?' br':'')+(r%3==2&&r<8?' bb':'')+' '+(o.c?o.c(i):'')),v=o.v(i);
  if(v)c.textContent=v;else{const n=E('div','n'),m=o.m(i),rr=o.r?o.r(i):0;for(let d=1;d<=9;d++){const s=E('span','',(m>>d&1)?d:'');if(rr>>d&1)s.className='r';else if(o.hd==d&&(m>>d&1))s.className='k';n.append(s)}c.append(n)}
  if(o.f)c.onclick=()=>o.f(i);b.append(c)}return b}
-
-/* ---------- Mini-Sudoku (Start) ---------- */
-function newMini(){const bs=[[1,2,3,4],[3,4,1,2],[2,3,4,1],[4,1,2,3]],dp=sh([1,2,3,4]),o=()=>sh([0,1]).flatMap(b=>sh([0,1]).map(r=>b*2+r)),rw=o(),cl=o(),s=[];
- for(let r=0;r<4;r++)for(let c=0;c<4;c++)s.push(dp[bs[rw[r]][cl[c]]-1]);
- const g=[...s];sh([...Array(16).keys()]).slice(0,7).forEach(i=>g[i]=0);mg={g,p:g.map(v=>!!v)};ms=null}
-const mpe=(i,j)=>i!=j&&((i>>2)==(j>>2)||i%4==j%4||((i>>2>>1)==(j>>2>>1)&&(i%4>>1)==(j%4>>1)));
-const mbad=i=>mg.g[i]&&mg.g.some((v,j)=>mpe(i,j)&&v==mg.g[i]);
-function mput(d){if(ms==null||mg.p[ms])return;mg.g[ms]=d;render();if(mg.g.every((v,i)=>v&&!mbad(i)))setTimeout(()=>{mg=null;go('menu')},700)}
-function intro(){if(!mg)newMini();const w=E('div','','<h1>Mini-Sudoku</h1><p class="mut" style="text-align:center;margin:-10px 0 8px">Löse das kleine Rätsel, um zu starten: Jede Zahl von 1 bis 4 kommt in jeder Zeile, Spalte und jedem 2×2-Block genau einmal vor.</p>');
- const b=E('div','brd');b.style.cssText='grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));max-width:340px;margin:16px auto';
- for(let i=0;i<16;i++){const c=E('div','c'+(i%4==1?' br':'')+((i>>2)==1?' bb':'')+(mg.p[i]?' g':mg.g[i]?' u':'')+(i==ms?' sel':'')+(mbad(i)?' e':''),mg.g[i]||'');c.style.fontSize='min(12vw,48px)';c.onclick=()=>{ms=i;render()};b.append(c)}
- const pad=E('div','pad');pad.style.cssText='grid-template-columns:repeat(5,1fr);max-width:340px;margin:auto';
- for(let d=1;d<=4;d++)pad.append(btn(d,()=>mput(d),'s sm'));pad.append(btn('⌫',()=>mput(0),'s sm'));w.append(b,pad);return w}
 
 /* ---------- Screens ---------- */
 function menu(){const w=E('div','','<h1>Sudoku</h1>');
@@ -265,13 +253,32 @@ const LS=[['Einsteiger-Strategien',[
 ['chain','Alternierende Ketten','Eine Kette verbindet Felder einer Zahl abwechselnd über starke Verbindungen (in einer Einheit gibt es nur zwei Felder für die Zahl, genau eines davon enthält sie) und schwache Verbindungen (zwei Felder, die sich sehen, höchstens eines enthält sie). Beginnt und endet die Kette mit einer starken Verbindung, enthält mindestens ein Ende die Zahl. Felder, die beide Enden sehen, verlieren sie.']]]];
 
 /* ---------- Render ---------- */
-const SC={intro,menu,game,lessons,lesson,stats,settings,profil,design},NV=[['Hauptmenü','menu'],['Spiel','game'],['Lektionen','lessons'],['Statistik','stats']];
+const SC={menu,game,lessons,lesson,stats,settings,profil,design},NV=[['Hauptmenü','menu'],['Spiel','game'],['Lektionen','lessons'],['Statistik','stats']];
 const OF={menu:'menu',game:'game',lessons:'lessons',lesson:'lessons',stats:'stats'},SET=['settings','profil','design'];
 function render(){acc(S.set.hue);document.documentElement.dataset.theme=S.set.dark?'dark':'light';
  document.querySelector('meta[name=theme-color]').content=S.set.dark?'#111318':'#f6f7f9';
  const m=$('#main');m.innerHTML='';m.append(SC[tab]());
- $('#hd').style.display=$('#nav').style.display=tab=='intro'?'none':'';$('#gear').className=SET.includes(tab)?'on':'';$('#back').style.visibility=tab=='lesson'?'visible':'hidden';
+ $('#gear').className=SET.includes(tab)?'on':'';$('#back').style.visibility=tab=='lesson'?'visible':'hidden';
  const n=$('#nav');n.innerHTML='';NV.forEach(([t,k])=>{const b=E('button',OF[tab]==k?'on':'',t);b.onclick=()=>{showLv=false;go(k)};n.append(b)})}
+(function(){try{const c=document.createElement('canvas').getContext('2d');c.font='700 100px '+getComputedStyle(document.body).fontFamily;const m=c.measureText('5');if(m.fontBoundingBoxAscent==null)return;
+ const fa=m.fontBoundingBoxAscent,fd=m.fontBoundingBoxDescent,gc=(100-fa-fd)/2+fa-(m.actualBoundingBoxAscent-m.actualBoundingBoxDescent)/2,dy=(50-gc)/100*2,st=document.documentElement.style;
+ st.setProperty('--dt',Math.max(0,dy)+'em');st.setProperty('--db',Math.max(0,-dy)+'em')}catch(e){}})();
+/* ---------- Android-Zurück-Taste ---------- */
+let armed=false,leaving=false,exitDlg=null;
+const arm=()=>{if(armed)return;armed=true;history.replaceState({i:0},'');history.pushState({i:1},'')};
+['click','pointerup','touchend'].forEach(t=>document.addEventListener(t,arm,true));
+const BK={lesson:'lessons',profil:'settings',design:'settings',settings:'menu',lessons:'menu',stats:'menu',game:'menu'};
+function back(){if(tab=='menu'){if(showLv){showLv=false;render();return 1}return 0}go(BK[tab]);return 1}
+const closeExit=()=>{if(exitDlg)exitDlg.remove();exitDlg=null};
+function toast(t){const e=E('div','toast',t);document.body.append(e);setTimeout(()=>e.remove(),3500)}
+function askExit(){if(exitDlg)return;const o=E('div','ov'),d=E('div','dl','<h2>App schließen?</h2><p>Die App wird beendet. Dein Spielstand bleibt gespeichert.</p>');
+ d.append(btn('Beenden',()=>{leaving=true;closeExit();window.close();
+  setTimeout(()=>{if(document.hidden)return;history.go(-1);setTimeout(()=>{leaving=false;armed=false},400);toast('Drücke ‹ noch einmal, um die App zu schließen.')},350)}),btn('Abbrechen',closeExit,'s'));
+ o.append(d);document.body.append(o);exitDlg=o}
+addEventListener('popstate',()=>{if(leaving||!armed)return;
+ if(exitDlg)closeExit();else if(info){info=false;render()}
+ else{const o=document.querySelector('body>.ov');if(o){o.remove();go('menu')}else if(!back())askExit()}
+ if(!history.state||history.state.i!=1)history.pushState({i:1},'')});
 $('#gear').onclick=()=>go('settings');$('#back').onclick=()=>go('lessons');
 setInterval(()=>{if(tab=='game'&&S.game&&!document.hidden){S.game.t++;const e=$('#tm');if(e)e.textContent=fmt(S.game.t);if(S.game.t%10==0)save()}},1000);
 render();

@@ -1,315 +1,187 @@
 <!DOCTYPE html>
-<html lang="de"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f6f7f9">
-<link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png">
-<title>Sudoku</title>
-<style>
-:root{--bg:#f6f7f9;--fg:#1b1d22;--card:#fff;--ln:#c9ced6;--mut:#6b7280;--acc:hsl(210 75% 50%);--accl:hsl(210 75% 50%/.18)}
-[data-theme=dark]{--bg:#111318;--fg:#eceef2;--card:#1c1f26;--ln:#3a3f4a;--mut:#9aa1ad}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;margin:0;background:var(--bg);color:var(--fg);font:16px system-ui,sans-serif;height:100dvh;display:flex;flex-direction:column}
-#hd{display:flex;justify-content:space-between;align-items:center;padding:calc(env(safe-area-inset-top) + 2px) 10px 0}
-#gear,#back{border:0;background:none;color:var(--fg);font-size:30px;line-height:1;padding:6px 10px}#gear.on{color:var(--acc)}#back{font-size:36px;visibility:hidden}
-#main{flex:1;overflow:auto;padding:6px 14px 14px;max-width:520px;width:100%;margin:0 auto}
-nav{display:flex;background:var(--bg);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;padding:14px 2px;border:0;background:none;color:var(--mut);font-size:13px}nav button.on{color:var(--acc);font-weight:700}
-.btn{display:block;width:100%;padding:16px;margin:10px 0;border:0;border-radius:14px;background:var(--acc);color:#fff;font-size:18px;font-weight:600;user-select:none;-webkit-user-select:none;touch-action:manipulation}
-.btn.s{background:var(--card);color:var(--fg);border:1px solid var(--ln)}.btn.on{outline:3px solid var(--acc)}.btn:disabled{opacity:.4}
-.btn.s.lk{background:var(--acc);color:#fff;border-color:var(--acc)}
-.btn.sm{padding:12px 4px;font-size:15px;margin:4px 0}
-input{-webkit-user-select:text;user-select:text}
-input{width:100%;padding:14px;font-size:18px;border-radius:12px;border:1px solid var(--ln);background:var(--card);color:var(--fg)}
-h1{text-align:center;font-size:42px;margin:24px 0 20px}h2{margin:8px 0}.mut{color:var(--mut)}
-.tr{display:flex;justify-content:space-between;align-items:center}.ds{font-size:15px;margin:2px 0 6px}
-.inf{width:36px;height:36px;border-radius:50%;border:2px solid var(--acc);background:none;color:var(--acc);font:italic 700 20px serif}
-.top{display:flex;justify-content:space-between;font-size:15px}
-.brd{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));grid-template-rows:repeat(9,minmax(0,1fr));aspect-ratio:1;border:2px solid var(--fg);background:var(--card);margin:8px 0}
-.c{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;border:.5px solid var(--ln);font-size:min(7vw,32px);user-select:none;overflow:hidden}
-.c.br{border-right:2px solid var(--fg)}.c.bb{border-bottom:2px solid var(--fg)}
-.c.un{background:color-mix(in srgb,var(--acc) 14%,transparent)}.c.p{background:color-mix(in srgb,var(--acc) 9%,transparent)}.c.same{background:var(--accl)}
-.c.g{font-weight:700}[data-ua="1"] .c.u{color:var(--acc)}
-.c.sel{background:var(--acc)!important;color:#fff!important}
-.c.h3{background:#ffd98a!important;color:#000!important}.c.h1{background:#f5a524!important;color:#000!important}
-.c.e{background:#e5484d!important;color:#fff!important;font-weight:700}.c.sel.e{box-shadow:inset 0 0 0 3px var(--fg)}
-.n{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));width:100%;height:100%;font-size:min(2.7vw,12px);line-height:1;color:var(--mut)}
-.n span{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}.n .r{color:#e5484d;text-decoration:line-through;font-weight:700}
-.n .k{background:var(--acc);color:#fff;border-radius:50%;font-weight:700;height:100%;max-width:100%;aspect-ratio:1;justify-self:center;padding-top:var(--dt,0em);padding-bottom:var(--db,0em)}.c.sel .n .k{background:#fff;color:var(--acc)}
-.pad{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
-.row{display:flex;gap:6px}.row .btn{margin:8px 0;font-size:13px;padding:13px 2px}
-.ban p{margin:6px 0 0}.ban .mut{font-size:14px}.lnk{border:0;background:none;color:var(--acc);font:inherit;font-weight:700;text-decoration:underline;padding:2px 0}
-.bst{display:flex;gap:6px;margin-top:8px}.bst .btn{margin:0;font-size:14px;padding:10px 4px}
-.c.rm{box-shadow:inset 0 0 0 3px #e5484d}
-.ban{background:var(--accl);border-radius:12px;padding:10px 12px;margin-top:6px;min-height:42px}
-.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:12px 14px;margin:8px 0}
-.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#000d;color:#fff;padding:10px 16px;border-radius:20px;z-index:9;text-align:center}
-.ov{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;padding:24px}
-.dl{background:var(--card);border-radius:18px;padding:22px;width:100%;max-width:340px;text-align:center}
-.rw{position:relative;width:min(80vw,300px);aspect-ratio:1;margin:24px auto;touch-action:none}
-.ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(hsl(0 75% 50%),hsl(60 75% 50%),hsl(120 75% 50%),hsl(180 75% 50%),hsl(240 75% 50%),hsl(300 75% 50%),hsl(360 75% 50%));-webkit-mask:radial-gradient(circle,transparent 62%,#000 63%);mask:radial-gradient(circle,transparent 62%,#000 63%)}
-.th{position:absolute;width:30px;height:30px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 4px #0008;transform:translate(-50%,-50%)}
-.fin{position:absolute;left:50%;top:50%;width:38%;aspect-ratio:1;transform:translate(-50%,-50%);border:0;border-radius:50%;color:#fff;font-size:18px;font-weight:700}
-</style></head><body>
-<header id="hd"><button id="back" aria-label="Zurück">‹</button><button id="gear" aria-label="Einstellungen">⚙&#xFE0E;</button></header>
-<div id="main"></div>
-<nav id="nav"></nav>
-<script>
-const $=s=>document.querySelector(s),E=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
-const btn=(t,f,c='')=>{const b=E('button','btn '+c,t);b.onclick=f;return b};
-const R=i=>i/9|0,Cc=i=>i%9;
-const U=[];for(let r=0;r<9;r++)U.push([...Array(9)].map((_,c)=>r*9+c));
-for(let c=0;c<9;c++)U.push([...Array(9)].map((_,r)=>r*9+c));
-for(let b=0;b<9;b++)U.push([...Array(9)].map((_,k)=>((b/3|0)*3+(k/3|0))*9+(b%3)*3+k%3));
-const P=[...Array(81)].map((_,i)=>[...new Set(U.filter(u=>u.includes(i)).flat())].filter(j=>j!=i));
-const pc=m=>{let n=0;while(m){m&=m-1;n++}return n};
-const bits=m=>{const a=[];for(let d=1;d<=9;d++)if(m>>d&1)a.push(d);return a};
-const sh=a=>{for(let i=a.length;i>1;){const j=Math.random()*i--|0;[a[i],a[j]]=[a[j],a[i]]}return a};
-const fmt=s=>(s/60|0)+':'+String(s%60).padStart(2,'0');
-const LV={easy:'Einfach',medium:'Mittel',hard:'Schwer',expert:'Experte',nightmare:'Alptraum'};
-const T={naked:'Nackter Einer',hidden:'Versteckter Einer',point:'Block-Zeilen-Ausschluss',claim:'Zeilen-Block-Ausschluss',nakedN2:'Nacktes Paar',nakedN3:'Nacktes Tripel',hiddenN2:'Verstecktes Paar',hiddenN3:'Verstecktes Tripel',fish2:'X-Wing',fish3:'Swordfish',fish4:'Jellyfish',xy:'XY-Wing',xyz:'XYZ-Wing',ur:'Eindeutiges Rechteck',chain:'Alternierende Kette'};
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#2b2d31">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Zauber</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-/* ---------- Solver / Generator ---------- */
-function mrv(g){let b=-1,bm=0,bc=10;for(let i=0;i<81;i++)if(!g[i]){let m=0x3fe;for(const j of P[i])m&=~(1<<g[j]);const n=pc(m);if(n<bc){bc=n;b=i;bm=m;if(n<2)break}}return[b,bm]}
-function count(g,lim=2){const[b,m]=mrv(g);if(b<0)return 1;let t=0;for(const d of bits(m)){g[b]=d;t+=count(g,lim-t);g[b]=0;if(t>=lim)break}return t}
-function fill(g){const[b,m]=mrv(g);if(b<0)return true;for(const d of sh(bits(m))){g[b]=d;if(fill(g))return true}g[b]=0;return false}
-const cand=g=>g.map((v,i)=>{if(v)return 0;let m=0x3fe;for(const j of P[i])m&=~(1<<g[j]);return m});
-const put=(C,g,i,v)=>{g[i]=v;C[i]=0;for(const j of P[i])C[j]&=~(1<<v)};
-function combos(a,n,f,s=0,cur=[]){if(cur.length==n)return f(cur);for(let i=s;i<a.length;i++){const r=combos(a,n,f,i+1,[...cur,a[i]]);if(r)return r}}
-function single(C,g){
- for(let i=0;i<81;i++)if(!g[i]&&pc(C[i])==1){const v=bits(C[i])[0],inv=[],ds=[];for(let d=1;d<=9;d++)if(d!=v){const j=P[i].find(j=>g[j]==d);if(j!=null){inv.push(j);ds.push(d)}}return{cell:i,val:v,tech:'naked',inv,ds}}
- for(let ui=0;ui<27;ui++){const u=U[ui];for(let d=1;d<=9;d++){const cs=u.filter(i=>!g[i]&&C[i]>>d&1);if(cs.length==1){const inv=[],why=[];
-  for(const i of u)if(i!=cs[0]&&!g[i]){const by=P[i].filter(j=>g[j]==d);by.forEach(j=>{if(!inv.includes(j))inv.push(j)});why.push([i,by])}
-  return{cell:cs[0],val:d,d,tech:'hidden',u:ui,inv,why}}}}
- return null}
-const mkPC=pt=>(C,g)=>{for(let ui=0;ui<27;ui++){if((ui>17)!=!!pt)continue;const u=U[ui];for(let d=1;d<=9;d++){const cs=u.filter(i=>!g[i]&&C[i]>>d&1);if(cs.length<2||cs.length>3)continue;
- for(let vi=0;vi<27;vi++){const v=U[vi];if(vi!=ui&&cs.every(i=>v.includes(i))){const rem=v.filter(i=>!u.includes(i)&&!g[i]&&C[i]>>d&1).map(i=>[i,d]);if(rem.length)return{tech:pt?'point':'claim',u:ui,v:vi,d,inv:cs,rem}}}}}return null};
-const mkN=n=>(C,g)=>{for(let ui=0;ui<27;ui++){const cs=U[ui].filter(i=>!g[i]&&C[i]);
- const r=combos(cs.filter(i=>pc(C[i])<=n),n,s=>{const m=s.reduce((a,i)=>a|C[i],0);if(pc(m)!=n)return;const rem=[];cs.forEach(i=>{if(!s.includes(i))bits(C[i]&m).forEach(d=>rem.push([i,d]))});if(rem.length)return{tech:'nakedN'+n,u:ui,dg:bits(m),inv:s,rem}});if(r)return r}return null};
-const mkH=n=>(C,g)=>{for(let ui=0;ui<27;ui++){const cs=U[ui].filter(i=>!g[i]&&C[i]),cd={};for(let d=1;d<=9;d++){const x=cs.filter(i=>C[i]>>d&1);if(x.length>=2&&x.length<=n)cd[d]=x}
- const r=combos(Object.keys(cd),n,s=>{const cells=[...new Set(s.flatMap(d=>cd[d]))];if(cells.length!=n)return;const mm=s.reduce((a,d)=>a|(1<<d),0),rem=[];cells.forEach(i=>bits(C[i]&~mm).forEach(d=>rem.push([i,d])));if(rem.length)return{tech:'hiddenN'+n,u:ui,dg:s.map(Number),inv:cells,rem}});if(r)return r}return null};
-const mkF=n=>(C,g)=>{for(let d=1;d<=9;d++)for(const t of[0,1]){const L=k=>U[t*9+k].filter(i=>!g[i]&&C[i]>>d&1),bs=[];
- for(let k=0;k<9;k++){const l=L(k).length;if(l>=2&&l<=n)bs.push(k)}
- const r=combos(bs,n,s=>{const cov=new Set();s.forEach(k=>L(k).forEach(i=>cov.add(t?R(i):Cc(i))));if(cov.size!=n)return;const rem=[];
-  for(const c of cov)for(let k=0;k<9;k++)if(!s.includes(k)){const i=t?c*9+k:k*9+c;if(!g[i]&&C[i]>>d&1)rem.push([i,d])}
-  if(rem.length)return{tech:'fish'+n,d,t,bs:s,cov:[...cov].sort((a,b)=>a-b),inv:s.flatMap(L),rem}});if(r)return r}return null};
-const FX={point:mkPC(1),claim:mkPC(0),nakedN2:mkN(2),hiddenN2:mkH(2),nakedN3:mkN(3),hiddenN3:mkH(3),fish2:mkF(2),fish3:mkF(3),fish4:mkF(4),
-xy(C,g){for(let p=0;p<81;p++){if(g[p]||pc(C[p])!=2)continue;const ws=P[p].filter(i=>!g[i]&&pc(C[i])==2);
- for(const a of ws)for(const b of ws){if(b<=a)continue;const sa=C[a]&C[p],sb=C[b]&C[p],za=C[a]&~C[p],zb=C[b]&~C[p];
-  if(pc(sa)!=1||pc(sb)!=1||sa==sb||pc(za)!=1||za!=zb)continue;const z=bits(za)[0];
-  const rem=P[a].filter(i=>i!=p&&P[b].includes(i)&&!g[i]&&C[i]>>z&1).map(i=>[i,z]);if(rem.length)return{tech:'xy',dg:[bits(sa)[0],bits(sb)[0],z],inv:[p,a,b],rem}}}return null},
-xyz(C,g){for(let p=0;p<81;p++){if(g[p]||pc(C[p])!=3)continue;const ws=P[p].filter(i=>!g[i]&&pc(C[i])==2&&(C[i]&~C[p])==0);
- for(const a of ws)for(const b of ws){if(b<=a||(C[a]|C[b])!=C[p]||pc(C[a]&C[b])!=1)continue;const z=bits(C[a]&C[b])[0];
-  const rem=P[p].filter(i=>P[a].includes(i)&&P[b].includes(i)&&!g[i]&&C[i]>>z&1).map(i=>[i,z]);if(rem.length)return{tech:'xyz',z,pd:bits(C[p]),ad:bits(C[a]),bd:bits(C[b]),inv:[p,a,b],rem}}}return null},
-ur(C,g){for(let r1=0;r1<9;r1++)for(let r2=r1+1;r2<9;r2++)for(let c1=0;c1<9;c1++)for(let c2=c1+1;c2<9;c2++){
- const q=[r1*9+c1,r1*9+c2,r2*9+c1,r2*9+c2];if(q.some(i=>g[i]))continue;
- if(new Set(q.map(i=>(R(i)/3|0)*3+(Cc(i)/3|0))).size!=2)continue;
- for(const f of q){const o=q.filter(i=>i!=f),m=C[o[0]];if(pc(m)!=2||o.some(i=>C[i]!=m)||(C[f]&m)!=m||C[f]==m)continue;
-  return{tech:'ur',f,dg:bits(m),inv:q,rem:bits(m).map(d=>[f,d])}}}return null},
-chain(C,g){for(let d=1;d<=9;d++){const has=i=>!g[i]&&C[i]>>d&1,st={};
- for(const u of U){const cs=u.filter(has);if(cs.length==2){(st[cs[0]]=st[cs[0]]||[]).push(cs[1]);(st[cs[1]]=st[cs[1]]||[]).push(cs[0])}}
- const dfs=(ch,dep)=>{const a=ch[0],e=ch[ch.length-1];for(const y of P[e]){if(!has(y)||ch.includes(y)||!st[y])continue;for(const z of st[y]){if(ch.includes(z))continue;const nc=[...ch,y,z];
-  const rem=P[a].filter(i=>P[z].includes(i)&&has(i)&&!nc.includes(i)).map(i=>[i,d]);if(rem.length)return{tech:'chain',d,ends:[a,z],inv:nc,rem};
-  if(dep<3){const r=dfs(nc,dep+1);if(r)return r}}}return null};
- for(const a in st)for(const b of st[a]){const r=dfs([+a,b],1);if(r)return r}}return null}};
-const ORD=['point','claim','nakedN2','hiddenN2','nakedN3','hiddenN3','fish2','fish3','fish4','xy','xyz','ur'];
-function elim(C,g,w,ch){if(w)return FX[w]?FX[w](C,g):null;for(const k of ORD){const r=FX[k](C,g);if(r)return r}return ch?FX.chain(C,g):null}
-const lvlOf=t=>/^fish|^xy|^ur|^chain/.test(t)?3:(t=='naked'||t=='hidden')?1:2;
-function grade(g0){const g=[...g0],C=cand(g);let l=1;for(;;){if(g.every(x=>x))return l;let s=single(C,g);if(s){put(C,g,s.cell,s.val);continue}s=elim(C,g);if(!s)return 9;l=Math.max(l,lvlOf(s.tech));s.rem.forEach(([i,d])=>C[i]&=~(1<<d))}}
-function mk(tc){const s=Array(81).fill(0);fill(s);const g=[...s];let n=81;for(const i of sh([...Array(81).keys()])){if(n<=tc)break;const v=g[i];g[i]=0;if(count([...g])!=1)g[i]=v;else n--}return{g,s}}
-const CL={easy:[40,l=>l==1],medium:[34,l=>l==1],hard:[30,l=>l==2],expert:[25,l=>l>=2],nightmare:[22,l=>l>=3]};
-function gen(k){const[tc,ok]=CL[k];let r;for(let a=0;a<25;a++){r=mk(tc);if(ok(grade(r.g)))break}return r}
-/* ---------- Erklärungen ---------- */
-const cn=i=>`Z${R(i)+1}/S${Cc(i)+1}`,BN=['oben links','oben Mitte','oben rechts','Mitte links','Mitte','Mitte rechts','unten links','unten Mitte','unten rechts'];
-const UN=u=>u<9?`Zeile ${u+1}`:u<18?`Spalte ${u-8}`:`Block ${BN[u-18]}`,dl=a=>a.join(', ');
-function explain(s){const t=s.tech,v=s.inv;
- if(t=='naked')return `Im Feld ${cn(s.cell)} sind ${dl(s.ds)} schon in Zeile, Spalte oder Block vorhanden (markierte Zahlen). Übrig bleibt nur die ${s.val}.`;
- if(t=='hidden')return `In ${UN(s.u)} passt die ${s.val} nur in ein Feld: ${cn(s.cell)}. Alle anderen freien Felder sind blockiert: `+s.why.map(([i,by])=>`${cn(i)} ${by.length?'durch die '+s.val+' in '+by.map(cn).join(' und '):'(durch frühere Ausschlüsse)'}`).join('; ')+'.';
- if(t=='point'||t=='claim')return `In ${UN(s.u)} kann die ${s.d} nur in ${UN(s.v)} stehen (markierte Felder). Darum fällt sie in den übrigen Feldern von ${UN(s.v)} weg.`;
- if(t[0]=='n'&&t[4]=='d')return `In ${UN(s.u)} enthalten diese ${v.length} Felder zusammen nur die Kandidaten ${dl(s.dg)}. Diese Zahlen müssen dort stehen und fallen in den übrigen Feldern von ${UN(s.u)} weg.`;
- if(t[0]=='h'&&t[6]=='N')return `In ${UN(s.u)} kommen die Zahlen ${dl(s.dg)} nur in diesen ${v.length} Feldern vor. Alle anderen Kandidaten dieser Felder fallen weg.`;
- if(t[0]=='f'){const b=s.t?'Spalten':'Zeilen',c=s.t?'Zeilen':'Spalten';return `Die ${s.d} liegt in den ${b} ${dl(s.bs.map(x=>x+1))} nur in den ${c} ${dl(s.cov.map(x=>x+1))} (markierte Felder). Darum fällt die ${s.d} in diesen ${c} in allen anderen ${b} weg.`}
- if(t=='xy'){const[x,y,z]=s.dg;return `Pivot ${cn(v[0])} (${x}/${y}) sieht ${cn(v[1])} (${x}/${z}) und ${cn(v[2])} (${y}/${z}). Ist der Pivot ${x}, wird der erste Flügel zur ${z}; ist er ${y}, der zweite. Felder, die beide Flügel sehen, können keine ${z} sein.`}
- if(t=='xyz')return `Pivot ${cn(v[0])} (${dl(s.pd)}) mit den Flügeln ${cn(v[1])} (${dl(s.ad)}) und ${cn(v[2])} (${dl(s.bd)}). Die ${s.z} steht immer im Pivot oder in einem Flügel. Felder, die alle drei sehen, können keine ${s.z} sein.`;
- if(t=='ur')return `Die vier markierten Felder bilden ein Rechteck in zwei Blöcken; drei Ecken enthalten nur ${dl(s.dg)}. Stünden diese Zahlen auch in ${cn(s.f)}, gäbe es zwei Lösungen – bei einem eindeutigen Sudoku unmöglich. Darum entfallen ${dl(s.dg)} in ${cn(s.f)}.`;
- if(t=='chain')return `Kette für die ${s.d}: `+v.map((c,i)=>(i?(i%2?' = ':' – '):'')+cn(c)).join('')+`. „=“ ist eine starke Verbindung (genau eines der beiden Felder enthält die ${s.d}), „–“ eine schwache (höchstens eines). Daher enthält ${cn(s.ends[0])} oder ${cn(s.ends[1])} die ${s.d}. Felder, die beide Enden sehen, können keine ${s.d} sein.`;
- return ''}
-function hint(cur,sol,notes){const gg=cur.map((v,i)=>v==sol[i]?v:0);
- const run=(C,nt)=>{const w=[...gg],steps=[];for(let k=0;k<300;k++){const s=single(C,w);
-  if(s){const r={...s,steps,nt};r.all=[...new Set([...steps.flatMap(x=>x.inv),...s.inv])];r.names=[...steps.map(x=>T[x.tech]),T[s.tech]];r.txt=[...steps,s].map(explain).join(' ');return r}
-  const e=elim(C,w,0,1);if(!e)return null;e.rem.forEach(([i,d])=>C[i]&=~(1<<d));steps.push(e)}return null};
- let r=run(cand(gg),0);if(r&&r.val==sol[r.cell])return r;
- r=run(cand(gg).map((m,i)=>notes[i]&&!gg[i]?((m&notes[i])||m):m),1);return r&&r.val==sol[r.cell]?r:null}
-const SLOW=['fish2','fish3','fish4','xy','xyz','ur','chain'];
-function example(k){const sg=k=='naked'||k=='hidden',slow=SLOW.includes(k),T0=Date.now();
- for(let a=0;a<300&&Date.now()-T0<6000;a++){const{g}=mk(slow?23:26);
-  for(let n=0;n<81;n++){const C=cand(g),s=single(C,g);
-   if(!sg&&(!slow||!s)){const e=FX[k](C,g);if(e)return{g:[...g],C,s:e}}
-   if(!s)break;if(s.tech==k)return{g:[...g],C,s};g[s.cell]=s.val}}return null}
+<main>
+  <!-- Funktion 1: 3D-Würfel -->
+  <section id="screen-cube" class="screen active">
+    <div class="stage grow">
+      <canvas id="cube3d"></canvas>
+      <button class="info" data-info="cube" aria-label="i">i</button>
+      <button class="gear" data-ta="Einstellungen"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.6" fill="none" stroke-width="3"/><g stroke-width="3.4"><path d="M12 1.8v3.4M12 18.8v3.4M1.8 12h3.4M18.8 12h3.4M4.8 4.8l2.4 2.4M16.8 16.8l2.4 2.4M4.8 19.2l2.4-2.4M16.8 7.2l2.4-2.4"/></g></svg></button>
+      <div class="overlay" id="cubeStatus"></div>
+    </div>
+    <div id="autoBar" class="row" hidden>
+      <button id="aPause" class="primary" data-t>Pause</button>
+      <button id="aStop" data-t>Stopp</button>
+      <button id="spdCube" class="spdBtn"></button>
+    </div>
+    <div class="seg modes" id="modeSeg">
+      <button data-m="free" data-ta="Frei" class="on"><svg viewBox="6 1 28 36"><path class="cb" d="M20 3L30 8L20 13L10 8Z M10 8V20L20 25V13 M30 8V20L20 25"/><path class="ln" stroke="#22a455" d="M11.5 14.8L18.4 18.3"/><path class="hd" fill="#22a455" stroke="#22a455" d="M19.3 18.7L15.6 18.7L17 15.8Z"/><path class="ln" stroke="#22a455" d="M8.5 27.6Q20.0 35.2 30.6 28.2"/><path class="hd" fill="#22a455" stroke="#22a455" d="M33.4 26.3L31.7 31.0L28.5 26.1Z"/></svg></button>
+      <button data-m="view" data-ta="Nur Ansicht"><svg viewBox="6 1 28 36"><path class="cb" d="M20 3L30 8L20 13L10 8Z M10 8V20L20 25V13 M30 8V20L20 25"/><path class="ln" stroke="#e03131" d="M11.5 14.8L18.4 18.3"/><path class="hd" fill="#e03131" stroke="#e03131" d="M19.3 18.7L15.6 18.7L17 15.8Z"/><path class="ln" stroke="#22a455" d="M8.5 27.6Q20.0 35.2 30.6 28.2"/><path class="hd" fill="#22a455" stroke="#22a455" d="M33.4 26.3L31.7 31.0L28.5 26.1Z"/></svg></button>
+      <button data-m="layer" data-ta="Nur Ebenen"><svg viewBox="6 1 28 36"><path class="cb" d="M20 3L30 8L20 13L10 8Z M10 8V20L20 25V13 M30 8V20L20 25"/><path class="ln" stroke="#22a455" d="M11.5 14.8L18.4 18.3"/><path class="hd" fill="#22a455" stroke="#22a455" d="M19.3 18.7L15.6 18.7L17 15.8Z"/><path class="ln" stroke="#e03131" d="M8.5 27.6Q20.0 35.2 30.6 28.2"/><path class="hd" fill="#e03131" stroke="#e03131" d="M33.4 26.3L31.7 31.0L28.5 26.1Z"/></svg></button>
+    </div>
+    <div class="row">
+      <button id="btnScramble" class="icoBtn" data-ta="Mischen"></button>
+      <button id="btnUndo" class="icoBtn" data-ta="Zurück" hidden></button>
+      <button id="btnReset" class="icoBtn" data-ta="Neu"></button>
+    </div>
+  </section>
 
-/* ---------- State ---------- */
-let S=JSON.parse(localStorage.getItem('sdk')||'{}');S.stats=S.stats||{};S.set=S.set||{dark:matchMedia('(prefers-color-scheme:dark)').matches,hue:210};
-const save=()=>localStorage.setItem('sdk',JSON.stringify(S));
-const acc=h=>{const s=document.documentElement.style;s.setProperty('--acc',`hsl(${h} 75% 50%)`);s.setProperty('--accl',`hsl(${h} 75% 50%/.18)`)};
-let tab='menu',sub=null,sel=null,nm=false,showLv=false,msg='',ex,rev=false,lock=0,LL=0,hueT=null,info=false;
-let fromHint=false;
-const go=(t,s)=>{if(t!='lesson')fromHint=false;tab=t;sub=s||null;if(t=='lesson'){ex=undefined;rev=false}if(t!='design')hueT=null;info=false;render()};
-const SUN='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-4px;margin-left:6px"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>';
-const MOON='<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--acc)" style="vertical-align:-4px;margin-left:6px"><path d="M20 14.5A8 8 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg>';
+  <!-- Funktion 2: Muster eingeben + Lösung -->
+  <section id="screen-solve" class="screen">
+    <div id="inputPane" class="pane">
+      <div class="stage grow">
+        <canvas id="preview3d"></canvas>
+        <button class="info" data-info="input" aria-label="i">i</button>
+        <button class="gear" data-ta="Einstellungen"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.6" fill="none" stroke-width="3"/><g stroke-width="3.4"><path d="M12 1.8v3.4M12 18.8v3.4M1.8 12h3.4M18.8 12h3.4M4.8 4.8l2.4 2.4M16.8 16.8l2.4 2.4M4.8 19.2l2.4-2.4M16.8 7.2l2.4-2.4"/></g></svg></button>
+        <div class="palbar" id="palette" hidden></div>
+        <div class="overlay" id="inToast"></div>
+      </div>
+      <div id="errBox" class="err" hidden></div>
+      <div class="row">
+        <button id="btnClear" data-t>Leeren</button>
+        <button id="btnFromCube" data-t>Vom 3D-Würfel</button>
+        <button id="depthBtn" class="spdBtn depthBtn"></button>
+        <button id="btnCompute" class="primary" data-t>Lösung berechnen</button>
+      </div>
+    </div>
 
-/* ---------- Board ---------- */
-function board(o){const b=E('div','brd');for(let i=0;i<81;i++){const r=R(i),q=Cc(i),c=E('div','c'+(q%3==2&&q<8?' br':'')+(r%3==2&&r<8?' bb':'')+' '+(o.c?o.c(i):'')),v=o.v(i);
- if(v)c.textContent=v;else{const n=E('div','n'),m=o.m(i),rr=o.r?o.r(i):0;for(let d=1;d<=9;d++){const s=E('span','',(m>>d&1)?d:'');if(rr>>d&1)s.className='r';else if(o.hd==d&&(m>>d&1))s.className='k';n.append(s)}c.append(n)}
- if(o.f)c.onclick=()=>o.f(i);b.append(c)}return b}
+    <div id="solvePane" class="pane" hidden>
+      <div class="stage grow">
+        <canvas id="solve3d"></canvas>
+        <button class="info" id="btnPhaseInfo" aria-label="i">i</button>
+        <button class="gear" data-ta="Einstellungen"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.6" fill="none" stroke-width="3"/><g stroke-width="3.4"><path d="M12 1.8v3.4M12 18.8v3.4M1.8 12h3.4M18.8 12h3.4M4.8 4.8l2.4 2.4M16.8 16.8l2.4 2.4M4.8 19.2l2.4-2.4M16.8 7.2l2.4-2.4"/></g></svg></button>
+        <div id="phaseTitle" class="phaseOv"></div>
+        <canvas id="netMini" class="netOv"></canvas>
+      </div>
+      <div class="moveRow">
+        <div class="move" id="moveBig">-</div>
+        <div class="moveCol"><div class="moveDesc" id="moveDesc"></div><div class="status" id="stepInfo"></div></div>
+        <button id="spdSolve" class="spdBtn"></button>
+      </div>
+      <div class="row ctrl">
+        <button id="bStart" data-ta="Anfang"></button>
+        <button id="bBack" data-ta="Zurück"></button>
+        <button id="bAuto" class="primary" data-ta="Auto"></button>
+        <button id="bNext" data-ta="Weiter"></button>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div class="row">
+        <button id="btnFollow" class="toggle" data-t>Folgen</button>
+        <button id="btnAlg" data-t>Algorithmus</button>
+        <button id="btnRecipe" data-t>Rezept</button>
+        <button id="btnBackInput" data-t>Neu</button>
+      </div>
+    </div>
+  </section>
 
-/* ---------- Screens ---------- */
-function menu(){const w=E('div','','<h1>Sudoku</h1>');
- if(S.set.name){const p=E('p','mut');p.style.cssText='text-align:center;font-size:20px;margin:-8px 0 12px';p.textContent='Hallo, '+S.set.name+'!';w.append(p)}
- const b=btn('Weiter',()=>go('game'));b.disabled=!S.game;
- w.append(b,btn('Neues Spiel',()=>{showLv=!showLv;render()},showLv?'on s':''));
- if(showLv)Object.keys(LV).forEach(k=>w.append(btn(LV[k],()=>start(k),'s')));return w}
-function start(k){$('#main').innerHTML='<h2 style="text-align:center;margin-top:35vh">Rätsel wird erstellt…</h2>';
- setTimeout(()=>{const r=gen(k);S.game={k,p:r.g,sol:r.s,cur:[...r.g],notes:Array(81).fill(0),t:0,err:0,hint:null,hist:[]};sel=null;nm=false;lock=0;msg='';showLv=false;save();go('game')},40)}
-const snap=()=>{const G=S.game;(G.hist=G.hist||[]).push({c:[...G.cur],n:[...G.notes]});if(G.hist.length>60)G.hist.shift()};
-const solved=()=>S.game.cur.every((v,i)=>v==S.game.sol[i]);
-function act(i,d,tog){const G=S.game;if(G.p[i]||(G.cur[i]&&G.cur[i]==G.sol[i]))return;msg='';
- if(nm){if(G.cur[i]||P[i].some(j=>G.cur[j]==d))return;snap();G.notes[i]^=1<<d}
- else if(G.cur[i]==d){if(!tog)return;snap();G.cur[i]=0}
- else{snap();G.cur[i]=d;G.notes[i]=0;P[i].forEach(j=>G.notes[j]&=~(1<<d));if(d!=G.sol[i]){G.err++;navigator.vibrate&&navigator.vibrate(80)}}
- G.hint=null;save();if(solved())return win();render()}
-const digit=d=>{if(sel!=null)act(sel,d,false)};
-function padTap(d){if(lock){lock=lock==d?0:d;render()}else digit(d)}
-function erase(){const G=S.game;if(sel==null||G.p[sel]||(G.cur[sel]&&G.cur[sel]==G.sol[sel])||(!G.cur[sel]&&!G.notes[sel]))return;snap();G.cur[sel]=0;G.notes[sel]=0;G.hint=null;msg='';save();render()}
-function undo(){const G=S.game,h=G.hist&&G.hist.pop();if(!h)return;G.cur=h.c;G.notes=h.n;G.hint=null;msg='';save();render()}
-function tipp(){const G=S.game;msg='';
- if(G.hint&&G.hint.st>=3){const h=G.hint;snap();G.cur[h.cell]=h.val;G.notes[h.cell]=0;P[h.cell].forEach(j=>G.notes[j]&=~(1<<h.val));G.hint=null;sel=h.cell;save();if(solved())return win();return render()}
- if(!G.hint){const r=hint(G.cur,G.sol,G.notes);if(!r){msg='Keine logische Fortsetzung gefunden – prüfe deine Eingaben.';return render()}G.hint={...r,st:0}}
- const h=G.hint;h.st++;if(h.st==1)sel=h.cell;save();render()}
-function win(){const G=S.game,s=S.stats[G.k]=S.stats[G.k]||{n:0,e:0,t:0,b:0};s.n++;s.e+=G.err;s.t+=G.t;s.b=s.b?Math.min(s.b,G.t):G.t;S.game=null;save();render();
- const o=E('div','ov',`<div class="dl"><h2>Geschafft! 🎉</h2><p>${LV[G.k]} · ${fmt(G.t)} · ${G.err} Fehler</p></div>`);o.firstChild.append(btn('Hauptmenü',()=>{o.remove();go('menu')}));document.body.append(o)}
-function game(){const G=S.game,w=E('div');
- if(!G){w.append(E('h2','','Kein laufendes Spiel'),btn('Neues Spiel',()=>{showLv=true;go('menu')}));return w}
- if(G.hint&&!G.hint.names)G.hint=null;
- const h=G.hint,st=h?h.st:0,sv=sel!=null?G.cur[sel]:0,stp=h?[...h.steps,h]:[],sw=h&&st>=3&&h.sw!=null?Math.max(0,Math.min(h.sw,stp.length-1)):null,cs=sw!=null?stp[sw]:null,lastS=sw!=null&&sw==stp.length-1,
-  hd=lock||sv||(h&&st>=3?(cs?(cs.d||(lastS?h.val:0)):h.val):0);
- w.append(E('div','top',`<b>${LV[G.k]}</b><span>Fehler: ${G.err}</span><span id="tm">${fmt(G.t)}</span>`));
- w.append(board({hd,v:i=>G.cur[i],m:i=>G.notes[i],f:i=>{sel=i;if(lock){const v=G.cur[i];if(v&&v!=lock&&(G.p[i]||v==G.sol[i]||nm)){lock=v;render()}else act(i,lock,true)}else render()},c:i=>{let c=G.p[i]?'g ':G.cur[i]?(G.cur[i]==G.sol[i]?'u ':'e '):'';
-  if(sel!=null&&!lock){if(i==sel)c+='sel ';else if(P[sel].includes(i))c+='p '}
-  if(hd&&G.cur[i]==hd)c+='same ';
-  if(cs){if(cs.inv.includes(i))c+='h3 ';if(cs.ends&&cs.ends.includes(i))c+='h1 ';if(cs.rem&&cs.rem.some(x=>x[0]==i))c+='rm ';if(cs.u!=null&&U[cs.u].includes(i))c+='un ';if(lastS&&i==h.cell)c+='h1 '}
-  else{if(h&&st>=3&&h.u!=null&&h.tech=='hidden'&&U[h.u].includes(i))c+='un ';if(h&&st>=3&&h.all.includes(i))c+='h3 ';if(h&&st>=1&&i==h.cell)c+='h1 '}return c}}));
- const cnt=d=>G.cur.filter(x=>x==d).length,pad=E('div','pad');
- for(let d=1;d<=9;d++){const b=btn(d,()=>{if(Date.now()-LL<700)return;padTap(d)},'s sm'+(lock==d?' lk':''));let tm;
-  b.onpointerdown=()=>{tm=setTimeout(()=>{LL=Date.now();lock=d;render()},450)};
-  b.onpointerup=b.onpointerleave=b.onpointercancel=()=>clearTimeout(tm);b.oncontextmenu=e=>e.preventDefault();b.disabled=cnt(d)>=9&&lock!=d;pad.append(b)}
- w.append(pad);
- const r=E('div','row'),u=btn('Rückgängig',undo,'s');u.disabled=!(G.hist&&G.hist.length);
- r.append(btn('Notizen',()=>{nm=!nm;render()},nm?'on s':'s'),btn('Löschen',erase,'s'),u,btn('Tipp',tipp,'s'));w.append(r);
- const ban=E('div','ban');
- if(msg)ban.textContent=msg;
- else if(h&&st==1)ban.textContent='Dieses Feld kann als Nächstes gelöst werden.';
- else if(h&&st==2){const p=E('div');p.append('Strategie: ',techLinks(h));ban.append(p,E('p','mut','Tippe auf eine Strategie, um die Lektion dazu zu öffnen.'))}
- else if(h&&cs){const n=stp.length,hd2=E('div','',`<b>Schritt ${sw+1} von ${n}</b>: `);hd2.append(techLink(cs.tech));ban.append(hd2);
-  ban.append(E('p','',(h.nt&&sw==0?'Anhand deiner Notizen: ':'')+explain(cs)+' (Z = Zeile, S = Spalte)'));
-  if(!lastS&&cs.rem&&cs.rem.length)ban.append(E('p','','Gedanklich streichen (rot umrandet): '+cs.rem.map(([c,d])=>d+' in '+cn(c)).join(', ')+'.'));
-  if(lastS)ban.append(E('p','','Jetzt lässt sich das orange Feld lösen: '+cn(h.cell)+' = '+h.val+'. Ein weiterer Tipp trägt die Zahl ein.'));
-  if(sw>0)ban.append(E('p','mut','Die Streichungen aus den vorigen Schritten sind schon mitgerechnet – sie stehen nicht in deinen Notizen.'));
-  const nv=E('div','bst'),b1=btn('‹ Zurück',()=>{h.sw=sw-1;save();render()},'s'),b2=btn('Weiter ›',()=>{h.sw=sw+1;save();render()},'s'),b3=btn('Übersicht',()=>{h.sw=null;save();render()},'s');
-  b1.disabled=sw==0;b2.disabled=lastS;nv.append(b1,b2,b3);ban.append(nv)}
- else if(h&&st>=3){const p=E('div');p.append('Strategie: ',techLinks(h));ban.append(p,E('p','',(h.nt?'Anhand deiner Notizen: ':'')+h.txt+' (Z = Zeile, S = Spalte) Ein weiterer Tipp löst das Feld.'));
-  const nv=E('div','bst');nv.append(btn(stp.length>1?'Schritt für Schritt ('+stp.length+' Schritte)':'Schritt für Schritt',()=>{h.sw=0;save();render()},'s'));ban.append(nv)}
- else if(lock)ban.textContent=`Zahl-${lock}-Modus: Ein Tipp auf ein Feld trägt ${nm?'die Notiz ':'die '}${lock} ein. Tippe im Rätsel eine andere Zahl an oder unten die ${lock}, um zu wechseln bzw. zu beenden.`;
- if(ban.textContent||ban.children.length)w.append(ban);return w}
-const LK=k=>LS.flatMap(g=>g[1]).find(it=>it[0]==k);
-function techLink(k){const it=LK(k);if(!it)return E('span','',T[k]);const a=E('button','lnk',T[k]);a.onclick=()=>{fromHint=true;go('lesson',it)};return a}
-function techLinks(h){const w=E('span');[...h.steps.map(x=>x.tech),h.tech].forEach((k,i)=>{if(i)w.append(E('span','',' → '));w.append(techLink(k))});return w}
-function leaveLesson(){if(fromHint){fromHint=false;go('game')}else go('lessons')}
-function lessons(){const w=E('div','','<h2>Lektionen</h2>');
- for(const[g,its]of LS){w.append(E('h3','mut',g));its.forEach(it=>w.append(btn(it[1],()=>{fromHint=false;go('lesson',it)},'s')))}return w}
-function lesson(){const[k,n,t]=sub,w=E('div'),tr=E('div','tr');tr.append(E('h2','',n));w.append(tr,E('p','ds',t));
- if(!k)return w;
- if(ex===undefined){w.append(E('p','mut','Beispiel wird gesucht…'));setTimeout(()=>{ex=example(k);render()},30);return w}
- const nw=btn('Neues Beispiel',()=>{ex=undefined;rev=false;info=false;render()},'s');
- if(!ex){w.append(E('p','','Es wurde gerade kein Beispiel gefunden.'),nw);return w}
- const s=ex.s,pl=s.val!=null,rm=i=>s.rem?s.rem.filter(x=>x[0]==i).reduce((a,x)=>a|1<<x[1],0):0;
- const ib=E('button','inf','i');ib.onclick=()=>{info=true;render()};tr.append(ib);
- const bd=board({hd:s.d,v:i=>ex.g[i]||(rev&&pl&&i==s.cell?s.val:0),m:i=>ex.C[i],r:i=>rev&&!pl?rm(i):0,
-  c:i=>((pl&&i==s.cell)||(s.ends&&s.ends.includes(i))?(rev&&pl?'u ':'h1 '):'')+(s.inv.includes(i)?'h3 ':'')+(s.u!=null&&U[s.u].includes(i)?'un':'')});
- bd.style.cssText='max-width:min(100%,calc(100dvh - 340px));margin:6px auto';w.append(bd);
- const r=E('div','row');r.append(btn(rev?'Verbergen':'Auflösung zeigen',()=>{rev=!rev;render()},'s'),nw);w.append(r);
- if(info){const o=E('div','ov'),d=E('div','dl');d.style.textAlign='left';o.onclick=e=>{if(e.target==o){info=false;render()}};
-  const res=pl?(rev?`Ergebnis: In ${cn(s.cell)} gehört die ${s.val}.`:'Welche Zahl gehört in das orange Feld? „Auflösung zeigen“ verrät es.'):(rev?'Die rot durchgestrichenen Kandidaten fallen weg.':'Welche Kandidaten lassen sich streichen? „Auflösung zeigen“ verrät es.');
-  d.append(E('p','',explain(s)),E('p','',res),E('p','mut','Orange = Zielfeld bzw. Kettenenden, Gelb = beteiligte Felder, getönt = betrachtete Zeile/Spalte/Block. Z = Zeile, S = Spalte.'),btn('Schließen',()=>{info=false;render()}));o.append(d);w.append(o)}
- return w}
-function stats(){const w=E('div','','<h2>Statistik</h2>');
- for(const k in LV){const s=S.stats[k];w.append(E('div','card',`<b>${LV[k]}</b><br>`+(s?`Abgeschlossen: ${s.n}<br>Ø Fehler: ${(s.e/s.n).toFixed(1)}<br>Ø Zeit: ${fmt(Math.round(s.t/s.n))}<br>Bestzeit: ${fmt(s.b)}`:'<span class="mut">Noch kein Spiel abgeschlossen</span>')))}return w}
-function settings(){const w=E('div','','<h2>Einstellungen</h2>');
- w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('Eigene Zahlen in Akzentfarbe: '+(S.set.ua?'An':'Aus'),()=>{S.set.ua=!S.set.ua;save();render()},S.set.ua?'on s':'s'),btn('‹ Zurück',()=>go('menu'),'s sm'),E('p','mut','Version: update8'));return w}
-function profil(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Profil'),E('p','mut','Dein Name (erscheint im Hauptmenü)'));
- const i=E('input');i.value=S.set.name||'';i.placeholder='Name';i.maxLength=24;i.oninput=()=>{S.set.name=i.value.trim();save()};w.append(i);return w}
-function design(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Design'),
- btn(S.set.dark?'Lightmode'+SUN:'Darkmode'+MOON,()=>{S.set.dark=!S.set.dark;save();render()},'s'));
- w.append(E('div','','<div class="rw"><div class="ring"></div><div class="th"></div><button class="fin">Fertig</button></div>'));
- let h=hueT??S.set.hue;const rw=w.querySelector('.rw'),th=w.querySelector('.th'),fin=w.querySelector('.fin');
- const up=()=>{const a=h*Math.PI/180;th.style.left=50+Math.sin(a)*40.5+'%';th.style.top=50-Math.cos(a)*40.5+'%';const c=`hsl(${h} 75% 50%)`;th.style.background=c;fin.style.background=c;acc(h)};
- const mv=e=>{const r=rw.getBoundingClientRect();h=Math.round((Math.atan2(e.clientX-r.left-r.width/2,-(e.clientY-r.top-r.height/2))*180/Math.PI+360)%360);hueT=h;up()};
- rw.onpointerdown=e=>{if(e.target==fin)return;rw.setPointerCapture(e.pointerId);mv(e);rw.onpointermove=mv};rw.onpointerup=()=>rw.onpointermove=null;
- fin.onclick=()=>{S.set.hue=h;hueT=null;save();go('settings')};up();return w}
+  <!-- Lektionen -->
+  <section id="screen-lessons" class="screen">
+    <div id="lessonListWrap">
+      <div class="tabsRow"><div class="seg" id="lessonTabs"></div><button class="gear inline" data-ta="Einstellungen"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.6" fill="none" stroke-width="3"/><g stroke-width="3.4"><path d="M12 1.8v3.4M12 18.8v3.4M1.8 12h3.4M18.8 12h3.4M4.8 4.8l2.4 2.4M16.8 16.8l2.4 2.4M4.8 19.2l2.4-2.4M16.8 7.2l2.4-2.4"/></g></svg></button></div>
+      <div id="lessonList"></div>
+    </div>
+    <div id="lessonDetail" class="pane" hidden>
+      <div class="topRow"><button id="lBack" data-t>Zurück</button><div id="lTitle" class="ltitle"></div><button class="infoBtn" id="btnLInfo" aria-label="i">i</button><button class="gear inline" data-ta="Einstellungen"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.6" fill="none" stroke-width="3"/><g stroke-width="3.4"><path d="M12 1.8v3.4M12 18.8v3.4M1.8 12h3.4M18.8 12h3.4M4.8 4.8l2.4 2.4M16.8 16.8l2.4 2.4M4.8 19.2l2.4-2.4M16.8 7.2l2.4-2.4"/></g></svg></button></div>
+      <div class="stage grow">
+        <canvas id="lesson3d"></canvas>
+        <div class="ovThumb left"><canvas id="lBefore" class="thumb"></canvas><span data-t>Vorher</span></div>
+        <div class="ovThumb right"><canvas id="lAfter" class="thumb"></canvas><span data-t>Nachher</span></div>
+      </div>
+      <div class="chips" id="lMoves"></div>
+      <div class="row ctrl">
+        <button id="lStart" data-ta="Anfang"></button>
+        <button id="lBackStep" data-ta="Zurück"></button>
+        <button id="lAuto" class="primary" data-ta="Auto"></button>
+        <button id="lNext" data-ta="Weiter"></button>
+      </div>
+      <div class="row"><div class="status grow" id="lInfo"></div><button id="spdLesson" class="spdBtn"></button></div>
+    </div>
+  </section>
 
-/* ---------- Lektionen ---------- */
-const LS=[['Einsteiger-Strategien',[
-['naked','Nackter Einer','Wenn in einem Feld nur noch eine einzige Zahl möglich ist, weil alle anderen acht in Zeile, Spalte oder Block schon vorkommen, muss genau diese Zahl dort stehen.'],
-['hidden','Versteckter Einer','Eine Zahl passt in einer Zeile, Spalte oder einem Block nur in ein einziges Feld – auch wenn dieses Feld noch weitere Kandidaten hat. Dann gehört die Zahl genau dorthin.'],
-['naked','Ausschlussverfahren','Prüfe, wo eine Zahl in Zeile, Spalte und Block schon steht. Alle dadurch blockierten Felder scheiden aus. Bleibt in einer Einheit nur ein Feld übrig – oder in einem Feld nur eine Zahl – ist es gelöst.']]],
-['Fortgeschrittene Strategien',[
-['nakedN2','Nacktes Paar','Zwei Felder einer Einheit enthalten nur dieselben zwei Kandidaten. Diese Zahlen gehören zwingend in diese beiden Felder und können aus allen anderen Feldern der Einheit gestrichen werden.'],
-['nakedN3','Nacktes Tripel','Drei Felder einer Einheit enthalten zusammen nur drei verschiedene Kandidaten. Diese drei Zahlen können aus den übrigen Feldern der Einheit gestrichen werden.'],
-['hiddenN2','Verstecktes Paar','Zwei Zahlen kommen in einer Einheit nur in denselben zwei Feldern vor. Dann gehören sie dorthin – alle anderen Kandidaten dieser beiden Felder können gestrichen werden.'],
-['hiddenN3','Verstecktes Tripel','Drei Zahlen kommen in einer Einheit nur in denselben drei Feldern vor. Alle anderen Kandidaten dieser drei Felder können gestrichen werden.'],
-['point','Block-Zeilen-Ausschluss','Liegen alle Kandidaten einer Zahl in einem Block in derselben Zeile (oder Spalte), kann die Zahl im Rest dieser Zeile (Spalte) nicht mehr stehen.'],
-['claim','Zeilen-Block-Ausschluss','Liegen alle Kandidaten einer Zahl in einer Zeile (oder Spalte) im selben Block, kann die Zahl im Rest dieses Blocks gestrichen werden.']]],
-['Experten-Strategien',[
-['fish2','X-Wing','Eine Zahl hat in zwei Zeilen jeweils genau zwei Kandidaten, und beide liegen in denselben zwei Spalten. Dann kann die Zahl in diesen Spalten in allen anderen Zeilen gestrichen werden (auch mit vertauschten Zeilen und Spalten).'],
-['fish3','Swordfish','Wie X-Wing, nur mit drei Zeilen und drei Spalten: Die Kandidaten einer Zahl liegen in drei Zeilen ausschließlich in denselben drei Spalten. In diesen Spalten fällt die Zahl in allen anderen Zeilen weg.'],
-['fish4','Jellyfish','Wie Swordfish, aber mit vier Zeilen und vier Spalten.'],
-['xy','XY-Wing','Ein Pivot-Feld mit den Kandidaten XY sieht zwei Felder mit XZ und YZ. Egal was im Pivot steht – Z landet in einem der beiden Flügel. Felder, die beide Flügel sehen, verlieren Z.'],
-['xyz','XYZ-Wing','Wie XY-Wing, aber das Pivot-Feld enthält XYZ. Nur Felder, die Pivot und beide Flügel sehen, verlieren den Kandidaten Z.'],
-['ur','Eindeutiges Rechteck','Vier Felder in zwei Blöcken bilden ein Rechteck. Enthalten drei Ecken nur dasselbe Zahlenpaar, dürfte die vierte Ecke nicht ebenfalls nur dieses Paar haben – sonst gäbe es zwei Lösungen. Also werden beide Zahlen des Paars aus der vierten Ecke gestrichen (Typ 1).'],
-['chain','Alternierende Ketten','Eine Kette verbindet Felder einer Zahl abwechselnd über starke Verbindungen (in einer Einheit gibt es nur zwei Felder für die Zahl, genau eines davon enthält sie) und schwache Verbindungen (zwei Felder, die sich sehen, höchstens eines enthält sie). Beginnt und endet die Kette mit einer starken Verbindung, enthält mindestens ein Ende die Zahl. Felder, die beide Enden sehen, verlieren sie.']]]];
+  <!-- Muster -->
+  <section id="screen-patterns" class="screen">
+    <div id="patListWrap">
+      <div class="tabsRow"><button id="patNew" class="primary" data-t>Eigenes Muster erstellen</button><button class="gear inline" data-ta="Einstellungen"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.6" fill="none" stroke-width="3"/><g stroke-width="3.4"><path d="M12 1.8v3.4M12 18.8v3.4M1.8 12h3.4M18.8 12h3.4M4.8 4.8l2.4 2.4M16.8 16.8l2.4 2.4M4.8 19.2l2.4-2.4M16.8 7.2l2.4-2.4"/></g></svg></button></div>
+      <div id="patList"></div>
+    </div>
+    <div id="patEdit" class="pane" hidden>
+      <div class="stage grow">
+        <canvas id="pe3d"></canvas>
+        <button class="info" data-info="patedit" aria-label="i">i</button>
+        <button class="gear" data-ta="Einstellungen"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.6" fill="none" stroke-width="3"/><g stroke-width="3.4"><path d="M12 1.8v3.4M12 18.8v3.4M1.8 12h3.4M18.8 12h3.4M4.8 4.8l2.4 2.4M16.8 16.8l2.4 2.4M4.8 19.2l2.4-2.4M16.8 7.2l2.4-2.4"/></g></svg></button>
+        <div class="palbar" id="pePalette" hidden></div>
+        <div class="overlay" id="peToast"></div>
+      </div>
+      <div id="peErr" class="err" hidden></div>
+      <div class="row">
+        <button id="peReset" class="icoBtn" data-ta="Gelöster Würfel"></button>
+        <button id="peClear" class="icoBtn" data-ta="Leeren"></button>
+        <button id="peCompute" class="icoBtn primary" data-ta="Anleitung berechnen"></button>
+        <button id="peSave" class="icoBtn" data-ta="Muster speichern"></button>
+      </div>
+    </div>
+  </section>
 
-/* ---------- Render ---------- */
-const SC={menu,game,lessons,lesson,stats,settings,profil,design},NV=[['Hauptmenü','menu'],['Spiel','game'],['Lektionen','lessons'],['Statistik','stats']];
-const OF={menu:'menu',game:'game',lessons:'lessons',lesson:'lessons',stats:'stats'},SET=['settings','profil','design'];
-function render(){acc(S.set.hue);document.documentElement.dataset.theme=S.set.dark?'dark':'light';document.documentElement.dataset.ua=S.set.ua?'1':'0';
- document.querySelector('meta[name=theme-color]').content=S.set.dark?'#111318':'#f6f7f9';
- const m=$('#main');m.innerHTML='';m.append(SC[tab]());
- $('#gear').className=SET.includes(tab)?'on':'';$('#back').style.visibility=tab=='lesson'?'visible':'hidden';
- const n=$('#nav');n.innerHTML='';NV.forEach(([t,k])=>{const b=E('button',OF[tab]==k?'on':'',t);b.onclick=()=>{showLv=false;go(k)};n.append(b)})}
-(function(){try{const c=document.createElement('canvas').getContext('2d');c.font='700 100px '+getComputedStyle(document.body).fontFamily;const m=c.measureText('5');if(m.fontBoundingBoxAscent==null)return;
- const fa=m.fontBoundingBoxAscent,fd=m.fontBoundingBoxDescent,gc=(100-fa-fd)/2+fa-(m.actualBoundingBoxAscent-m.actualBoundingBoxDescent)/2,dy=(50-gc)/100*2,st=document.documentElement.style;
- st.setProperty('--dt',Math.max(0,dy)+'em');st.setProperty('--db',Math.max(0,-dy)+'em')}catch(e){}})();
-/* ---------- Android-Zurück-Taste ---------- */
-const K=4;let armed=false,leaving=false,exitDlg=null,cur=0;
-const arm=()=>{if(armed)return;armed=true;history.replaceState({i:0},'');for(let i=1;i<=K;i++)history.pushState({i},'');cur=K};
-const restore=()=>{if(armed&&!leaving&&cur<K)history.go(K-cur)};
-['click','pointerup','touchend'].forEach(t=>document.addEventListener(t,()=>{arm();restore()},true));
-const BK={lesson:'lessons',profil:'settings',design:'settings',settings:'menu',lessons:'menu',stats:'menu',game:'menu'};
-function back(){if(tab=='lesson'){leaveLesson();return 1}if(tab=='menu'){if(showLv){showLv=false;render();return 1}return 0}go(BK[tab]);return 1}
-const closeExit=()=>{if(exitDlg)exitDlg.remove();exitDlg=null};
-function toast(t){const e=E('div','toast',t);document.body.append(e);setTimeout(()=>e.remove(),3500)}
-function askExit(){if(exitDlg)return;const o=E('div','ov'),d=E('div','dl','<h2>App schließen?</h2><p>Die App wird beendet. Dein Spielstand bleibt gespeichert.</p>');
- d.append(btn('Beenden',()=>{leaving=true;closeExit();window.close();
-  setTimeout(()=>{if(document.hidden)return;history.go(-cur);cur=0;setTimeout(()=>{leaving=false},500);toast('Drücke ‹ noch einmal, um die App zu schließen.')},350)}),btn('Abbrechen',closeExit,'s'));
- o.append(d);document.body.append(o);exitDlg=o}
-addEventListener('popstate',()=>{if(leaving||!armed)return;const i=history.state&&history.state.i;if(i==null)return;
- if(i>=cur){cur=i;return}
- cur=i;
- if(exitDlg)closeExit();else if(info){info=false;render()}
- else{const o=document.querySelector('body>.ov');if(o){o.remove();go('menu')}else if(!back())askExit()}
- restore()});
-$('#gear').onclick=()=>go('settings');$('#back').onclick=leaveLesson;
-document.addEventListener('selectstart',e=>{if(!e.target.closest||!e.target.closest('input'))e.preventDefault()});
-document.addEventListener('contextmenu',e=>{if(!e.target.closest||!e.target.closest('input'))e.preventDefault()});
-setInterval(()=>{if(tab=='game'&&S.game&&!document.hidden){S.game.t++;const e=$('#tm');if(e)e.textContent=fmt(S.game.t);if(S.game.t%10==0)save()}},1000);
-render();
-if('serviceWorker'in navigator){const had=navigator.serviceWorker.controller;let rl=0;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!rl){rl=1;location.reload()}});navigator.serviceWorker.register('sw.js')}
-</script></body></html>
+  <!-- Einstellungen -->
+  <section id="screen-settings" class="screen">
+    <div class="topRow"><button id="setBack" data-t>Zurück</button><div class="ltitle" data-t>Einstellungen</div><span class="spacer"></span></div>
+    <div class="acc" id="acc-design">
+      <button class="accHead"><span data-t>Design</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="accBody">
+        <div class="row"><button id="themeBtn" class="themeBtn"></button></div>
+        <div class="ringWrap"><canvas id="ring"></canvas><button id="ringOk" data-t>Fertig</button></div>
+        <div class="optRow"><span data-t>Gedrehte Ebene hervorheben</span><button id="hlToggle" class="toggle"></button></div>
+        <p class="lDesc" data-t>Beim Abspielen von Lösung und Lektionen wird die Ebene, die gedreht wird, umrandet.</p>
+      </div>
+    </div>
+    <div class="acc" id="acc-cube">
+      <button class="accHead"><span data-t>Würfel</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="accBody">
+        <div class="seg" id="sizeSeg"><button data-n="3">3x3</button><button data-n="4">4x4</button></div>
+        <p class="lDesc" data-t>Wähle, ob du mit dem 3x3- oder dem 4x4-Würfel arbeiten möchtest. Das gilt für Würfel, Lösen und Lektionen.</p>
+        <div class="optRow"><span data-t>Zurück-Taste anzeigen</span><button id="undoToggle" class="toggle"></button></div>
+      </div>
+    </div>
+    <div class="acc" id="acc-depth">
+      <button class="accHead"><span data-t>Berechnungstiefe</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="accBody">
+        <div id="depthList"></div>
+        <p class="lDesc" data-t>Je tiefer die Berechnung, desto weniger Züge braucht die Lösung. Beim 3x3 sind es meist etwa 20 Züge, beim 4x4 rund 100. Die Berechnung läuft im Hintergrund.</p>
+      </div>
+    </div>
+    <div class="acc" id="acc-lang">
+      <button class="accHead"><span data-t>Sprache</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="accBody"><div id="langList"></div></div>
+    </div>
+  </section>
+</main>
+<nav>
+  <button id="tab-cube" class="active" data-t>Würfel</button>
+  <button id="tab-solve" data-t>Lösen</button>
+  <button id="tab-lessons" data-t>Lektionen</button>
+  <button id="tab-patterns" data-t>Muster</button>
+</nav>
+<div id="modal" hidden><div class="card"><div id="modalText"></div><button id="modalClose" class="primary wide" data-t>OK</button></div></div>
+<script src="cube.js"></script>
+<script src="solver.js"></script>
+<script src="twophase.js"></script>
+<script src="solver4.js"></script>
+<script src="lessons.js"></script>
+<script src="render.js"></script>
+<script src="thumbs.js"></script>
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

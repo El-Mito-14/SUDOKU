@@ -8,7 +8,7 @@
 :root{--bg:#f6f7f9;--fg:#1b1d22;--card:#fff;--ln:#c9ced6;--mut:#6b7280;--acc:hsl(210 75% 50%);--accl:hsl(210 75% 50%/.18)}
 [data-theme=dark]{--bg:#111318;--fg:#eceef2;--card:#1c1f26;--ln:#3a3f4a;--mut:#9aa1ad}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px system-ui,sans-serif;height:100dvh;display:flex;flex-direction:column}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;margin:0;background:var(--bg);color:var(--fg);font:16px system-ui,sans-serif;height:100dvh;display:flex;flex-direction:column}
 #hd{display:flex;justify-content:space-between;align-items:center;padding:calc(env(safe-area-inset-top) + 2px) 10px 0}
 #gear,#back{border:0;background:none;color:var(--fg);font-size:30px;line-height:1;padding:6px 10px}#gear.on{color:var(--acc)}#back{font-size:36px;visibility:hidden}
 #main{flex:1;overflow:auto;padding:6px 14px 14px;max-width:520px;width:100%;margin:0 auto}
@@ -18,6 +18,7 @@ nav button{flex:1;padding:14px 2px;border:0;background:none;color:var(--mut);fon
 .btn.s{background:var(--card);color:var(--fg);border:1px solid var(--ln)}.btn.on{outline:3px solid var(--acc)}.btn:disabled{opacity:.4}
 .btn.s.lk{background:var(--acc);color:#fff;border-color:var(--acc)}
 .btn.sm{padding:12px 4px;font-size:15px;margin:4px 0}
+input{-webkit-user-select:text;user-select:text}
 input{width:100%;padding:14px;font-size:18px;border-radius:12px;border:1px solid var(--ln);background:var(--card);color:var(--fg)}
 h1{text-align:center;font-size:42px;margin:24px 0 20px}h2{margin:8px 0}.mut{color:var(--mut)}
 .tr{display:flex;justify-content:space-between;align-items:center}.ds{font-size:15px;margin:2px 0 6px}
@@ -27,7 +28,7 @@ h1{text-align:center;font-size:42px;margin:24px 0 20px}h2{margin:8px 0}.mut{colo
 .c{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;border:.5px solid var(--ln);font-size:min(7vw,32px);user-select:none;overflow:hidden}
 .c.br{border-right:2px solid var(--fg)}.c.bb{border-bottom:2px solid var(--fg)}
 .c.un{background:color-mix(in srgb,var(--acc) 14%,transparent)}.c.p{background:color-mix(in srgb,var(--acc) 9%,transparent)}.c.same{background:var(--accl)}
-.c.g{font-weight:700}.c.u{color:var(--acc)}
+.c.g{font-weight:700}[data-ua="1"] .c.u{color:var(--acc)}
 .c.sel{background:var(--acc)!important;color:#fff!important}
 .c.h3{background:#ffd98a!important;color:#000!important}.c.h1{background:#f5a524!important;color:#000!important}
 .c.e{background:#e5484d!important;color:#fff!important;font-weight:700}.c.sel.e{box-shadow:inset 0 0 0 3px var(--fg)}
@@ -36,6 +37,9 @@ h1{text-align:center;font-size:42px;margin:24px 0 20px}h2{margin:8px 0}.mut{colo
 .n .k{background:var(--acc);color:#fff;border-radius:50%;font-weight:700;height:100%;max-width:100%;aspect-ratio:1;justify-self:center;padding-top:var(--dt,0em);padding-bottom:var(--db,0em)}.c.sel .n .k{background:#fff;color:var(--acc)}
 .pad{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
 .row{display:flex;gap:6px}.row .btn{margin:8px 0;font-size:13px;padding:13px 2px}
+.ban p{margin:6px 0 0}.ban .mut{font-size:14px}.lnk{border:0;background:none;color:var(--acc);font:inherit;font-weight:700;text-decoration:underline;padding:2px 0}
+.bst{display:flex;gap:6px;margin-top:8px}.bst .btn{margin:0;font-size:14px;padding:10px 4px}
+.c.rm{box-shadow:inset 0 0 0 3px #e5484d}
 .ban{background:var(--accl);border-radius:12px;padding:10px 12px;margin-top:6px;min-height:42px}
 .card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:12px 14px;margin:8px 0}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#000d;color:#fff;padding:10px 16px;border-radius:20px;z-index:9;text-align:center}
@@ -147,7 +151,8 @@ let S=JSON.parse(localStorage.getItem('sdk')||'{}');S.stats=S.stats||{};S.set=S.
 const save=()=>localStorage.setItem('sdk',JSON.stringify(S));
 const acc=h=>{const s=document.documentElement.style;s.setProperty('--acc',`hsl(${h} 75% 50%)`);s.setProperty('--accl',`hsl(${h} 75% 50%/.18)`)};
 let tab='menu',sub=null,sel=null,nm=false,showLv=false,msg='',ex,rev=false,lock=0,LL=0,hueT=null,info=false;
-const go=(t,s)=>{tab=t;sub=s||null;if(t=='lesson'){ex=undefined;rev=false}if(t!='design')hueT=null;info=false;render()};
+let fromHint=false;
+const go=(t,s)=>{if(t!='lesson')fromHint=false;tab=t;sub=s||null;if(t=='lesson'){ex=undefined;rev=false}if(t!='design')hueT=null;info=false;render()};
 const SUN='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-4px;margin-left:6px"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>';
 const MOON='<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--acc)" style="vertical-align:-4px;margin-left:6px"><path d="M20 14.5A8 8 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg>';
 
@@ -166,14 +171,14 @@ function start(k){$('#main').innerHTML='<h2 style="text-align:center;margin-top:
  setTimeout(()=>{const r=gen(k);S.game={k,p:r.g,sol:r.s,cur:[...r.g],notes:Array(81).fill(0),t:0,err:0,hint:null,hist:[]};sel=null;nm=false;lock=0;msg='';showLv=false;save();go('game')},40)}
 const snap=()=>{const G=S.game;(G.hist=G.hist||[]).push({c:[...G.cur],n:[...G.notes]});if(G.hist.length>60)G.hist.shift()};
 const solved=()=>S.game.cur.every((v,i)=>v==S.game.sol[i]);
-function act(i,d,tog){const G=S.game;if(G.p[i])return;msg='';
+function act(i,d,tog){const G=S.game;if(G.p[i]||(G.cur[i]&&G.cur[i]==G.sol[i]))return;msg='';
  if(nm){if(G.cur[i]||P[i].some(j=>G.cur[j]==d))return;snap();G.notes[i]^=1<<d}
  else if(G.cur[i]==d){if(!tog)return;snap();G.cur[i]=0}
  else{snap();G.cur[i]=d;G.notes[i]=0;P[i].forEach(j=>G.notes[j]&=~(1<<d));if(d!=G.sol[i]){G.err++;navigator.vibrate&&navigator.vibrate(80)}}
  G.hint=null;save();if(solved())return win();render()}
 const digit=d=>{if(sel!=null)act(sel,d,false)};
 function padTap(d){if(lock){lock=lock==d?0:d;render()}else digit(d)}
-function erase(){const G=S.game;if(sel==null||G.p[sel]||(!G.cur[sel]&&!G.notes[sel]))return;snap();G.cur[sel]=0;G.notes[sel]=0;G.hint=null;msg='';save();render()}
+function erase(){const G=S.game;if(sel==null||G.p[sel]||(G.cur[sel]&&G.cur[sel]==G.sol[sel])||(!G.cur[sel]&&!G.notes[sel]))return;snap();G.cur[sel]=0;G.notes[sel]=0;G.hint=null;msg='';save();render()}
 function undo(){const G=S.game,h=G.hist&&G.hist.pop();if(!h)return;G.cur=h.c;G.notes=h.n;G.hint=null;msg='';save();render()}
 function tipp(){const G=S.game;msg='';
  if(G.hint&&G.hint.st>=3){const h=G.hint;snap();G.cur[h.cell]=h.val;G.notes[h.cell]=0;P[h.cell].forEach(j=>G.notes[j]&=~(1<<h.val));G.hint=null;sel=h.cell;save();if(solved())return win();return render()}
@@ -184,12 +189,14 @@ function win(){const G=S.game,s=S.stats[G.k]=S.stats[G.k]||{n:0,e:0,t:0,b:0};s.n
 function game(){const G=S.game,w=E('div');
  if(!G){w.append(E('h2','','Kein laufendes Spiel'),btn('Neues Spiel',()=>{showLv=true;go('menu')}));return w}
  if(G.hint&&!G.hint.names)G.hint=null;
- const h=G.hint,st=h?h.st:0,sv=sel!=null?G.cur[sel]:0,hd=lock||sv||(h&&st>=3?h.val:0);
+ const h=G.hint,st=h?h.st:0,sv=sel!=null?G.cur[sel]:0,stp=h?[...h.steps,h]:[],sw=h&&st>=3&&h.sw!=null?Math.max(0,Math.min(h.sw,stp.length-1)):null,cs=sw!=null?stp[sw]:null,lastS=sw!=null&&sw==stp.length-1,
+  hd=lock||sv||(h&&st>=3?(cs?(cs.d||(lastS?h.val:0)):h.val):0);
  w.append(E('div','top',`<b>${LV[G.k]}</b><span>Fehler: ${G.err}</span><span id="tm">${fmt(G.t)}</span>`));
- w.append(board({hd,v:i=>G.cur[i],m:i=>G.notes[i],f:i=>{sel=i;if(lock)act(i,lock,true);else render()},c:i=>{let c=G.p[i]?'g ':G.cur[i]?(G.cur[i]==G.sol[i]?'u ':'e '):'';
+ w.append(board({hd,v:i=>G.cur[i],m:i=>G.notes[i],f:i=>{sel=i;if(lock){const v=G.cur[i];if(v&&v!=lock&&(G.p[i]||v==G.sol[i]||nm)){lock=v;render()}else act(i,lock,true)}else render()},c:i=>{let c=G.p[i]?'g ':G.cur[i]?(G.cur[i]==G.sol[i]?'u ':'e '):'';
   if(sel!=null&&!lock){if(i==sel)c+='sel ';else if(P[sel].includes(i))c+='p '}
   if(hd&&G.cur[i]==hd)c+='same ';
-  if(h&&st>=3&&h.u!=null&&h.tech=='hidden'&&U[h.u].includes(i))c+='un ';if(h&&st>=3&&h.all.includes(i))c+='h3 ';if(h&&st>=1&&i==h.cell)c+='h1 ';return c}}));
+  if(cs){if(cs.inv.includes(i))c+='h3 ';if(cs.ends&&cs.ends.includes(i))c+='h1 ';if(cs.rem&&cs.rem.some(x=>x[0]==i))c+='rm ';if(cs.u!=null&&U[cs.u].includes(i))c+='un ';if(lastS&&i==h.cell)c+='h1 '}
+  else{if(h&&st>=3&&h.u!=null&&h.tech=='hidden'&&U[h.u].includes(i))c+='un ';if(h&&st>=3&&h.all.includes(i))c+='h3 ';if(h&&st>=1&&i==h.cell)c+='h1 '}return c}}));
  const cnt=d=>G.cur.filter(x=>x==d).length,pad=E('div','pad');
  for(let d=1;d<=9;d++){const b=btn(d,()=>{if(Date.now()-LL<700)return;padTap(d)},'s sm'+(lock==d?' lk':''));let tm;
   b.onpointerdown=()=>{tm=setTimeout(()=>{LL=Date.now();lock=d;render()},450)};
@@ -197,10 +204,27 @@ function game(){const G=S.game,w=E('div');
  w.append(pad);
  const r=E('div','row'),u=btn('Rückgängig',undo,'s');u.disabled=!(G.hist&&G.hist.length);
  r.append(btn('Notizen',()=>{nm=!nm;render()},nm?'on s':'s'),btn('Löschen',erase,'s'),u,btn('Tipp',tipp,'s'));w.append(r);
- const tx=msg||(h?[,'Dieses Feld kann als Nächstes gelöst werden.','Strategie: '+h.names.join(' → '),(h.nt?'Anhand deiner Notizen: ':'')+h.txt+' (Z = Zeile, S = Spalte) Ein weiterer Tipp löst das Feld.'][st]:'')||(lock?`Zahl-${lock}-Modus: Ein Tipp auf ein Feld trägt ${nm?'die Notiz ':'die '}${lock} ein. Zum Beenden unten die ${lock} antippen.`:'');
- if(tx)w.append(E('div','ban',tx));return w}
+ const ban=E('div','ban');
+ if(msg)ban.textContent=msg;
+ else if(h&&st==1)ban.textContent='Dieses Feld kann als Nächstes gelöst werden.';
+ else if(h&&st==2){const p=E('div');p.append('Strategie: ',techLinks(h));ban.append(p,E('p','mut','Tippe auf eine Strategie, um die Lektion dazu zu öffnen.'))}
+ else if(h&&cs){const n=stp.length,hd2=E('div','',`<b>Schritt ${sw+1} von ${n}</b>: `);hd2.append(techLink(cs.tech));ban.append(hd2);
+  ban.append(E('p','',(h.nt&&sw==0?'Anhand deiner Notizen: ':'')+explain(cs)+' (Z = Zeile, S = Spalte)'));
+  if(!lastS&&cs.rem&&cs.rem.length)ban.append(E('p','','Gedanklich streichen (rot umrandet): '+cs.rem.map(([c,d])=>d+' in '+cn(c)).join(', ')+'.'));
+  if(lastS)ban.append(E('p','','Jetzt lässt sich das orange Feld lösen: '+cn(h.cell)+' = '+h.val+'. Ein weiterer Tipp trägt die Zahl ein.'));
+  if(sw>0)ban.append(E('p','mut','Die Streichungen aus den vorigen Schritten sind schon mitgerechnet – sie stehen nicht in deinen Notizen.'));
+  const nv=E('div','bst'),b1=btn('‹ Zurück',()=>{h.sw=sw-1;save();render()},'s'),b2=btn('Weiter ›',()=>{h.sw=sw+1;save();render()},'s'),b3=btn('Übersicht',()=>{h.sw=null;save();render()},'s');
+  b1.disabled=sw==0;b2.disabled=lastS;nv.append(b1,b2,b3);ban.append(nv)}
+ else if(h&&st>=3){const p=E('div');p.append('Strategie: ',techLinks(h));ban.append(p,E('p','',(h.nt?'Anhand deiner Notizen: ':'')+h.txt+' (Z = Zeile, S = Spalte) Ein weiterer Tipp löst das Feld.'));
+  const nv=E('div','bst');nv.append(btn(stp.length>1?'Schritt für Schritt ('+stp.length+' Schritte)':'Schritt für Schritt',()=>{h.sw=0;save();render()},'s'));ban.append(nv)}
+ else if(lock)ban.textContent=`Zahl-${lock}-Modus: Ein Tipp auf ein Feld trägt ${nm?'die Notiz ':'die '}${lock} ein. Tippe im Rätsel eine andere Zahl an oder unten die ${lock}, um zu wechseln bzw. zu beenden.`;
+ if(ban.textContent||ban.children.length)w.append(ban);return w}
+const LK=k=>LS.flatMap(g=>g[1]).find(it=>it[0]==k);
+function techLink(k){const it=LK(k);if(!it)return E('span','',T[k]);const a=E('button','lnk',T[k]);a.onclick=()=>{fromHint=true;go('lesson',it)};return a}
+function techLinks(h){const w=E('span');[...h.steps.map(x=>x.tech),h.tech].forEach((k,i)=>{if(i)w.append(E('span','',' → '));w.append(techLink(k))});return w}
+function leaveLesson(){if(fromHint){fromHint=false;go('game')}else go('lessons')}
 function lessons(){const w=E('div','','<h2>Lektionen</h2>');
- for(const[g,its]of LS){w.append(E('h3','mut',g));its.forEach(it=>w.append(btn(it[1],()=>go('lesson',it),'s')))}return w}
+ for(const[g,its]of LS){w.append(E('h3','mut',g));its.forEach(it=>w.append(btn(it[1],()=>{fromHint=false;go('lesson',it)},'s')))}return w}
 function lesson(){const[k,n,t]=sub,w=E('div'),tr=E('div','tr');tr.append(E('h2','',n));w.append(tr,E('p','ds',t));
  if(!k)return w;
  if(ex===undefined){w.append(E('p','mut','Beispiel wird gesucht…'));setTimeout(()=>{ex=example(k);render()},30);return w}
@@ -219,7 +243,7 @@ function lesson(){const[k,n,t]=sub,w=E('div'),tr=E('div','tr');tr.append(E('h2',
 function stats(){const w=E('div','','<h2>Statistik</h2>');
  for(const k in LV){const s=S.stats[k];w.append(E('div','card',`<b>${LV[k]}</b><br>`+(s?`Abgeschlossen: ${s.n}<br>Ø Fehler: ${(s.e/s.n).toFixed(1)}<br>Ø Zeit: ${fmt(Math.round(s.t/s.n))}<br>Bestzeit: ${fmt(s.b)}`:'<span class="mut">Noch kein Spiel abgeschlossen</span>')))}return w}
 function settings(){const w=E('div','','<h2>Einstellungen</h2>');
- w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('‹ Zurück',()=>go('menu'),'s sm'),E('p','mut','Version: update7'));return w}
+ w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('Eigene Zahlen in Akzentfarbe: '+(S.set.ua?'An':'Aus'),()=>{S.set.ua=!S.set.ua;save();render()},S.set.ua?'on s':'s'),btn('‹ Zurück',()=>go('menu'),'s sm'),E('p','mut','Version: update8'));return w}
 function profil(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Profil'),E('p','mut','Dein Name (erscheint im Hauptmenü)'));
  const i=E('input');i.value=S.set.name||'';i.placeholder='Name';i.maxLength=24;i.oninput=()=>{S.set.name=i.value.trim();save()};w.append(i);return w}
 function design(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Design'),
@@ -255,7 +279,7 @@ const LS=[['Einsteiger-Strategien',[
 /* ---------- Render ---------- */
 const SC={menu,game,lessons,lesson,stats,settings,profil,design},NV=[['Hauptmenü','menu'],['Spiel','game'],['Lektionen','lessons'],['Statistik','stats']];
 const OF={menu:'menu',game:'game',lessons:'lessons',lesson:'lessons',stats:'stats'},SET=['settings','profil','design'];
-function render(){acc(S.set.hue);document.documentElement.dataset.theme=S.set.dark?'dark':'light';
+function render(){acc(S.set.hue);document.documentElement.dataset.theme=S.set.dark?'dark':'light';document.documentElement.dataset.ua=S.set.ua?'1':'0';
  document.querySelector('meta[name=theme-color]').content=S.set.dark?'#111318':'#f6f7f9';
  const m=$('#main');m.innerHTML='';m.append(SC[tab]());
  $('#gear').className=SET.includes(tab)?'on':'';$('#back').style.visibility=tab=='lesson'?'visible':'hidden';
@@ -269,7 +293,7 @@ const arm=()=>{if(armed)return;armed=true;history.replaceState({i:0},'');for(let
 const restore=()=>{if(armed&&!leaving&&cur<K)history.go(K-cur)};
 ['click','pointerup','touchend'].forEach(t=>document.addEventListener(t,()=>{arm();restore()},true));
 const BK={lesson:'lessons',profil:'settings',design:'settings',settings:'menu',lessons:'menu',stats:'menu',game:'menu'};
-function back(){if(tab=='menu'){if(showLv){showLv=false;render();return 1}return 0}go(BK[tab]);return 1}
+function back(){if(tab=='lesson'){leaveLesson();return 1}if(tab=='menu'){if(showLv){showLv=false;render();return 1}return 0}go(BK[tab]);return 1}
 const closeExit=()=>{if(exitDlg)exitDlg.remove();exitDlg=null};
 function toast(t){const e=E('div','toast',t);document.body.append(e);setTimeout(()=>e.remove(),3500)}
 function askExit(){if(exitDlg)return;const o=E('div','ov'),d=E('div','dl','<h2>App schließen?</h2><p>Die App wird beendet. Dein Spielstand bleibt gespeichert.</p>');
@@ -282,7 +306,9 @@ addEventListener('popstate',()=>{if(leaving||!armed)return;const i=history.state
  if(exitDlg)closeExit();else if(info){info=false;render()}
  else{const o=document.querySelector('body>.ov');if(o){o.remove();go('menu')}else if(!back())askExit()}
  restore()});
-$('#gear').onclick=()=>go('settings');$('#back').onclick=()=>go('lessons');
+$('#gear').onclick=()=>go('settings');$('#back').onclick=leaveLesson;
+document.addEventListener('selectstart',e=>{if(!e.target.closest||!e.target.closest('input'))e.preventDefault()});
+document.addEventListener('contextmenu',e=>{if(!e.target.closest||!e.target.closest('input'))e.preventDefault()});
 setInterval(()=>{if(tab=='game'&&S.game&&!document.hidden){S.game.t++;const e=$('#tm');if(e)e.textContent=fmt(S.game.t);if(S.game.t%10==0)save()}},1000);
 render();
 if('serviceWorker'in navigator){const had=navigator.serviceWorker.controller;let rl=0;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!rl){rl=1;location.reload()}});navigator.serviceWorker.register('sw.js')}

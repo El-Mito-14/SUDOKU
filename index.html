@@ -42,6 +42,12 @@ h1{text-align:center;font-size:42px;margin:24px 0 20px}h2{margin:8px 0}.mut{colo
 .bst{display:flex;gap:6px;margin-top:8px}.bst .btn{margin:0;font-size:14px;padding:10px 4px}
 .c.rm{box-shadow:inset 0 0 0 3px #e5484d}
 .ban{background:var(--accl);border-radius:12px;padding:10px 12px;margin-top:6px;min-height:42px}
+.acw{color:var(--acc);font-weight:700}
+.pth{position:relative;width:min(100%,360px);margin:8px auto 24px}.pth svg{display:block;width:100%;height:auto}
+.nd{position:absolute;width:46px;height:46px;transform:translate(-50%,-50%);border-radius:50%;border:3px solid var(--ln);background:var(--card);color:var(--mut);font-size:16px;font-weight:700;padding:0;display:flex;align-items:center;justify-content:center;touch-action:manipulation}
+.nd.dn{background:var(--acc);border-color:var(--acc);color:#fff}
+.nd.cr{border-color:var(--acc);color:var(--acc);box-shadow:0 0 0 6px var(--accl)}
+.nd svg{width:18px;height:18px}
 .card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:12px 14px;margin:8px 0}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#000d;color:#fff;padding:10px 16px;border-radius:20px;z-index:9;text-align:center}
 .ov{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;padding:24px}
@@ -54,6 +60,7 @@ h1{text-align:center;font-size:42px;margin:24px 0 20px}h2{margin:8px 0}.mut{colo
 <header id="hd"><button id="back" aria-label="Zurück">‹</button><button id="gear" aria-label="Einstellungen">⚙&#xFE0E;</button></header>
 <div id="main"></div>
 <nav id="nav"></nav>
+<script src="puzzles.js"></script>
 <script>
 const $=s=>document.querySelector(s),E=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
 const btn=(t,f,c='')=>{const b=E('button','btn '+c,t);b.onclick=f;return b};
@@ -123,7 +130,7 @@ function gen(k){const[tc,ok]=CL[k];let r;for(let a=0;a<25;a++){r=mk(tc);if(ok(gr
 const cn=i=>`Z${R(i)+1}/S${Cc(i)+1}`,BN=['oben links','oben Mitte','oben rechts','Mitte links','Mitte','Mitte rechts','unten links','unten Mitte','unten rechts'];
 const UN=u=>u<9?`Zeile ${u+1}`:u<18?`Spalte ${u-8}`:`Block ${BN[u-18]}`,dl=a=>a.join(', ');
 function explain(s){const t=s.tech,v=s.inv;
- if(t=='naked')return `Im Feld ${cn(s.cell)} sind ${dl(s.ds)} schon in Zeile, Spalte oder Block vorhanden (markierte Zahlen). Übrig bleibt nur die ${s.val}.`;
+ if(t=='naked')return `Im Feld ${cn(s.cell)} sind ${dl(s.ds)} schon in Zeile, Spalte oder Block vorhanden (markierte Zahlen). Übrig bleibt nur die ${s.val}.`+(()=>{const ms=[1,2,3,4,5,6,7,8,9].filter(d=>d!=s.val&&!s.ds.includes(d));return ms.length?` (Die ${dl(ms)} ${ms.length>1?'sind':'ist'} schon ausgeschlossen.)`:''})();
  if(t=='hidden')return `In ${UN(s.u)} passt die ${s.val} nur in ein Feld: ${cn(s.cell)}. Alle anderen freien Felder sind blockiert: `+s.why.map(([i,by])=>`${cn(i)} ${by.length?'durch die '+s.val+' in '+by.map(cn).join(' und '):'(durch frühere Ausschlüsse)'}`).join('; ')+'.';
  if(t=='point'||t=='claim')return `In ${UN(s.u)} kann die ${s.d} nur in ${UN(s.v)} stehen (markierte Felder). Darum fällt sie in den übrigen Feldern von ${UN(s.v)} weg.`;
  if(t[0]=='n'&&t[4]=='d')return `In ${UN(s.u)} enthalten diese ${v.length} Felder zusammen nur die Kandidaten ${dl(s.dg)}. Diese Zahlen müssen dort stehen und fallen in den übrigen Feldern von ${UN(s.u)} weg.`;
@@ -134,12 +141,16 @@ function explain(s){const t=s.tech,v=s.inv;
  if(t=='ur')return `Die vier markierten Felder bilden ein Rechteck in zwei Blöcken; drei Ecken enthalten nur ${dl(s.dg)}. Stünden diese Zahlen auch in ${cn(s.f)}, gäbe es zwei Lösungen – bei einem eindeutigen Sudoku unmöglich. Darum entfallen ${dl(s.dg)} in ${cn(s.f)}.`;
  if(t=='chain')return `Kette für die ${s.d}: `+v.map((c,i)=>(i?(i%2?' = ':' – '):'')+cn(c)).join('')+`. „=“ ist eine starke Verbindung (genau eines der beiden Felder enthält die ${s.d}), „–“ eine schwache (höchstens eines). Daher enthält ${cn(s.ends[0])} oder ${cn(s.ends[1])} die ${s.d}. Felder, die beide Enden sehen, können keine ${s.d} sein.`;
  return ''}
-function hint(cur,sol,notes){const gg=cur.map((v,i)=>v==sol[i]?v:0);
- const run=(C,nt)=>{const w=[...gg],steps=[];for(let k=0;k<300;k++){const s=single(C,w);
-  if(s){const r={...s,steps,nt};r.all=[...new Set([...steps.flatMap(x=>x.inv),...s.inv])];r.names=[...steps.map(x=>T[x.tech]),T[s.tech]];r.txt=[...steps,s].map(explain).join(' ');return r}
-  const e=elim(C,w,0,1);if(!e)return null;e.rem.forEach(([i,d])=>C[i]&=~(1<<d));steps.push(e)}return null};
- let r=run(cand(gg),0);if(r&&r.val==sol[r.cell])return r;
- r=run(cand(gg).map((m,i)=>notes[i]&&!gg[i]?((m&notes[i])||m):m),1);return r&&r.val==sol[r.cell]?r:null}
+function hint(cur,sol,notes,ex){const gg=cur.map((v,i)=>v==sol[i]?v:0);
+ const run=(C,nt)=>{ex.forEach(([i,d])=>{C[i]&=~(1<<d)});
+  for(let k=0;k<200;k++){const s=single(C,gg);
+   if(s)return s.val==sol[s.cell]?{...s,kind:'single',nt,steps:[],all:s.inv,names:[T[s.tech]],txt:explain(s)}:null;
+   const e=elim(C,gg,0,1);if(!e)return null;
+   if(e.rem.some(([i,d])=>sol[i]==d))return null;
+   if(e.rem.every(([i,d])=>notes[i]&&!(notes[i]>>d&1))){e.rem.forEach(([i,d])=>{C[i]&=~(1<<d);ex.push([i,d])});continue}
+   return {...e,kind:'elim',nt,steps:[],all:e.inv,names:[T[e.tech]],txt:explain(e)}}return null};
+ let r=run(cand(gg),0);if(r)return r;
+ return run(cand(gg).map((m,i)=>notes[i]&&!gg[i]?((m&notes[i])||m):m),1)}
 const SLOW=['fish2','fish3','fish4','xy','xyz','ur','chain'];
 function example(k){const sg=k=='naked'||k=='hidden',slow=SLOW.includes(k),T0=Date.now();
  for(let a=0;a<300&&Date.now()-T0<6000;a++){const{g}=mk(slow?23:26);
@@ -167,10 +178,15 @@ function menu(){const w=E('div','','<h1>Sudoku</h1>');
  if(S.set.name){const p=E('p','mut');p.style.cssText='text-align:center;font-size:20px;margin:-8px 0 12px';p.textContent='Hallo, '+S.set.name+'!';w.append(p)}
  const b=btn('Weiter',()=>go('game'));b.disabled=!S.game;
  w.append(b,btn('Neues Spiel',()=>{showLv=!showLv;render()},showLv?'on s':''));
- if(showLv)Object.keys(LV).forEach(k=>w.append(btn(LV[k],()=>start(k),'s')));return w}
-function start(k){$('#main').innerHTML='<h2 style="text-align:center;margin-top:35vh">Rätsel wird erstellt…</h2>';
- setTimeout(()=>{const r=gen(k);S.game={k,p:r.g,sol:r.s,cur:[...r.g],notes:Array(81).fill(0),t:0,err:0,hint:null,hist:[]};sel=null;nm=false;lock=0;msg='';showLv=false;save();go('game')},40)}
-const snap=()=>{const G=S.game;(G.hist=G.hist||[]).push({c:[...G.cur],n:[...G.notes]});if(G.hist.length>60)G.hist.shift()};
+ if(showLv)Object.keys(LV).forEach(k=>w.append(btn(LV[k]+' · '+Math.min(S.prog[k]||0,PZ[k].length)+' / '+PZ[k].length,()=>go('levels',k),'s')));return w}
+S.prog=S.prog||{};
+function start(k,i){const g=PZ[k][i].split('').map(Number),sol=[...g];fill(sol);
+ S.game={k,i,p:g,sol,cur:[...g],notes:Array(81).fill(0),t:0,err:0,hint:null,hist:[],ex:[]};sel=null;nm=false;lock=0;msg='';showLv=false;save();go('game')}
+function openPz(k,i){const G=S.game;if(G&&G.k==k&&G.i==i)return go('game');
+ if(!G)return start(k,i);
+ const o=E('div','ov cf',`<div class="dl"><h2>Neues Rätsel starten?</h2><p>Dein laufendes Spiel (${LV[G.k]}${G.i!=null?' · '+(G.i+1):''}) geht dabei verloren.</p></div>`);
+ o.firstChild.append(btn('Neu starten',()=>{o.remove();start(k,i)}),btn('Abbrechen',()=>o.remove(),'s'));document.body.append(o)}
+const snap=()=>{const G=S.game;(G.hist=G.hist||[]).push({c:[...G.cur],n:[...G.notes],x:(G.ex||[]).length});if(G.hist.length>60)G.hist.shift()};
 const solved=()=>S.game.cur.every((v,i)=>v==S.game.sol[i]);
 function act(i,d,tog){const G=S.game;if(G.p[i]||(G.cur[i]&&G.cur[i]==G.sol[i]))return;msg='';
  if(nm){if(G.cur[i]||P[i].some(j=>G.cur[j]==d))return;snap();G.notes[i]^=1<<d}
@@ -180,24 +196,32 @@ function act(i,d,tog){const G=S.game;if(G.p[i]||(G.cur[i]&&G.cur[i]==G.sol[i]))r
 const digit=d=>{if(sel!=null)act(sel,d,false)};
 function padTap(d){if(lock){lock=lock==d?0:d;render()}else digit(d)}
 function erase(){const G=S.game;if(sel==null||G.p[sel]||(G.cur[sel]&&G.cur[sel]==G.sol[sel])||(!G.cur[sel]&&!G.notes[sel]))return;snap();G.cur[sel]=0;G.notes[sel]=0;G.hint=null;msg='';save();render()}
-function undo(){const G=S.game,h=G.hist&&G.hist.pop();if(!h)return;G.cur=h.c;G.notes=h.n;G.hint=null;msg='';save();render()}
+function undo(){const G=S.game,h=G.hist&&G.hist.pop();if(!h)return;G.cur=h.c;G.notes=h.n;if(h.x!=null&&G.ex)G.ex=G.ex.slice(0,h.x);G.hint=null;msg='';save();render()}
 function tipp(){const G=S.game;msg='';
- if(G.hint&&G.hint.st>=3){const h=G.hint;snap();G.cur[h.cell]=h.val;G.notes[h.cell]=0;P[h.cell].forEach(j=>G.notes[j]&=~(1<<h.val));G.hint=null;sel=h.cell;save();if(solved())return win();return render()}
- if(!G.hint){const r=hint(G.cur,G.sol,G.notes);if(!r){msg='Keine logische Fortsetzung gefunden – prüfe deine Eingaben.';return render()}G.hint={...r,st:0}}
- const h=G.hint;h.st++;if(h.st==1)sel=h.cell;save();render()}
-function win(){const G=S.game,s=S.stats[G.k]=S.stats[G.k]||{n:0,e:0,t:0,b:0};s.n++;s.e+=G.err;s.t+=G.t;s.b=s.b?Math.min(s.b,G.t):G.t;S.game=null;save();render();
- const o=E('div','ov',`<div class="dl"><h2>Geschafft! 🎉</h2><p>${LV[G.k]} · ${fmt(G.t)} · ${G.err} Fehler</p></div>`);o.firstChild.append(btn('Hauptmenü',()=>{o.remove();go('menu')}));document.body.append(o)}
+ if(G.hint&&G.hint.st>=3){const h=G.hint;snap();
+  if(h.kind=='elim'){let n=0;h.rem.forEach(([i,d])=>{if(G.notes[i]>>d&1){G.notes[i]&=~(1<<d);n++}});(G.ex=G.ex||[]).push(...h.rem);G.hint=null;sel=h.rem[0][0];
+   msg=(n?'Aus deinen Notizen gestrichen: ':'Als ausgeschlossen vermerkt: ')+h.rem.map(([i,d])=>d+' in '+cn(i)).join(', ')+'. Der nächste Tipp baut darauf auf.';save();return render()}
+  G.cur[h.cell]=h.val;G.notes[h.cell]=0;P[h.cell].forEach(j=>G.notes[j]&=~(1<<h.val));G.hint=null;sel=h.cell;save();if(solved())return win();return render()}
+ if(!G.hint){G.ex=G.ex||[];const r=hint(G.cur,G.sol,G.notes,G.ex);if(!r){msg='Keine logische Fortsetzung gefunden – prüfe deine Eingaben.';return render()}G.hint={...r,st:0}}
+ const h=G.hint;h.st++;if(h.st==1&&h.kind=='single')sel=h.cell;save();render()}
+function win(){const G=S.game,first=G.i==null||(S.prog[G.k]||0)==G.i;
+ if(first){const s=S.stats[G.k]=S.stats[G.k]||{n:0,e:0,t:0,b:0};s.n++;s.e+=G.err;s.t+=G.t;s.b=s.b?Math.min(s.b,G.t):G.t;if(G.i!=null)S.prog[G.k]=G.i+1}
+ S.game=null;save();render();
+ const o=E('div','ov',`<div class="dl"><h2>Geschafft! 🎉</h2><p>${LV[G.k]}${G.i!=null?' · '+(G.i+1):''} · ${fmt(G.t)} · ${G.err} Fehler</p></div>`);
+ if(G.i!=null&&G.i+1<PZ[G.k].length)o.firstChild.append(btn('Nächstes Rätsel',()=>{o.remove();start(G.k,G.i+1)}));
+ if(G.i!=null)o.firstChild.append(btn('Zur Übersicht',()=>{o.remove();go('levels',G.k)},'s'));
+ o.firstChild.append(btn('Hauptmenü',()=>{o.remove();go('menu')},'s'));document.body.append(o)}
 function game(){const G=S.game,w=E('div');
  if(!G){w.append(E('h2','','Kein laufendes Spiel'),btn('Neues Spiel',()=>{showLv=true;go('menu')}));return w}
- if(G.hint&&!G.hint.names)G.hint=null;
+ if(G.hint&&(!G.hint.names||!G.hint.kind))G.hint=null;
  const h=G.hint,st=h?h.st:0,sv=sel!=null?G.cur[sel]:0,stp=h?[...h.steps,h]:[],sw=h&&st>=3&&h.sw!=null?Math.max(0,Math.min(h.sw,stp.length-1)):null,cs=sw!=null?stp[sw]:null,lastS=sw!=null&&sw==stp.length-1,
-  hd=lock||sv||(h&&st>=3?(cs?(cs.d||(lastS?h.val:0)):h.val):0);
- w.append(E('div','top',`<b>${LV[G.k]}</b><span>Fehler: ${G.err}</span><span id="tm">${fmt(G.t)}</span>`));
+  hd=lock||sv||(h&&st>=3?(cs?(cs.d||(lastS?h.val:0)):(h.val||h.d||h.z||0)):0);
+ w.append(E('div','top',`<b>${LV[G.k]}${G.i!=null?' · '+(G.i+1):''}</b><span>Fehler: ${G.err}</span><span id="tm">${fmt(G.t)}</span>`));
  w.append(board({hd,v:i=>G.cur[i],m:i=>G.notes[i],f:i=>{sel=i;if(lock){const v=G.cur[i];if(v&&v!=lock&&(G.p[i]||v==G.sol[i]||nm)){lock=v;render()}else act(i,lock,true)}else render()},c:i=>{let c=G.p[i]?'g ':G.cur[i]?(G.cur[i]==G.sol[i]?'u ':'e '):'';
   if(sel!=null&&!lock){if(i==sel)c+='sel ';else if(P[sel].includes(i))c+='p '}
   if(hd&&G.cur[i]==hd)c+='same ';
   if(cs){if(cs.inv.includes(i))c+='h3 ';if(cs.ends&&cs.ends.includes(i))c+='h1 ';if(cs.rem&&cs.rem.some(x=>x[0]==i))c+='rm ';if(cs.u!=null&&U[cs.u].includes(i))c+='un ';if(lastS&&i==h.cell)c+='h1 '}
-  else{if(h&&st>=3&&h.u!=null&&h.tech=='hidden'&&U[h.u].includes(i))c+='un ';if(h&&st>=3&&h.all.includes(i))c+='h3 ';if(h&&st>=1&&i==h.cell)c+='h1 '}return c}}));
+  else{if(h&&st>=3&&h.u!=null&&h.tech=='hidden'&&U[h.u].includes(i))c+='un ';if(h&&st>=3&&h.all.includes(i))c+='h3 ';if(h&&h.kind=='single'&&st>=1&&i==h.cell)c+='h1 ';if(h&&h.kind=='elim'){if(st>=3){if(h.u!=null&&U[h.u].includes(i))c+='un ';if(h.rem.some(x=>x[0]==i))c+='rm '}else if(st>=1&&h.inv.includes(i))c+='h1 '}}return c}}));
  const cnt=d=>G.cur.filter(x=>x==d).length,pad=E('div','pad');
  for(let d=1;d<=9;d++){const b=btn(d,()=>{if(Date.now()-LL<700)return;padTap(d)},'s sm'+(lock==d?' lk':''));let tm;
   b.onpointerdown=()=>{tm=setTimeout(()=>{LL=Date.now();lock=d;render()},450)};
@@ -207,7 +231,7 @@ function game(){const G=S.game,w=E('div');
  r.append(btn('Notizen',()=>{nm=!nm;render()},nm?'on s':'s'),btn('Löschen',erase,'s'),u,btn('Tipp',tipp,'s'));w.append(r);
  const ban=E('div','ban');
  if(msg)ban.textContent=msg;
- else if(h&&st==1)ban.textContent='Dieses Feld kann als Nächstes gelöst werden.';
+ else if(h&&st==1)ban.textContent=h.kind=='elim'?'In diesem Bereich lassen sich Kandidaten ausschließen.':'Dieses Feld kann als Nächstes gelöst werden.';
  else if(h&&st==2){const p=E('div');p.append('Strategie: ',techLinks(h));ban.append(p,E('p','mut','Tippe auf eine Strategie, um die Lektion dazu zu öffnen.'))}
  else if(h&&cs){const n=stp.length,hd2=E('div','',`<b>Schritt ${sw+1} von ${n}</b>: `);hd2.append(techLink(cs.tech));ban.append(hd2);
   ban.append(E('p','',(h.nt&&sw==0?'Anhand deiner Notizen: ':'')+explain(cs)+' (Z = Zeile, S = Spalte)'));
@@ -216,8 +240,8 @@ function game(){const G=S.game,w=E('div');
   if(sw>0)ban.append(E('p','mut','Die Streichungen aus den vorigen Schritten sind schon mitgerechnet – sie stehen nicht in deinen Notizen.'));
   const nv=E('div','bst'),b1=btn('‹ Zurück',()=>{h.sw=sw-1;save();render()},'s'),b2=btn('Weiter ›',()=>{h.sw=sw+1;save();render()},'s'),b3=btn('Übersicht',()=>{h.sw=null;save();render()},'s');
   b1.disabled=sw==0;b2.disabled=lastS;nv.append(b1,b2,b3);ban.append(nv)}
- else if(h&&st>=3){const p=E('div');p.append('Strategie: ',techLinks(h));ban.append(p,E('p','',(h.nt?'Anhand deiner Notizen: ':'')+h.txt+' (Z = Zeile, S = Spalte) Ein weiterer Tipp löst das Feld.'));
-  const nv=E('div','bst');nv.append(btn(stp.length>1?'Schritt für Schritt ('+stp.length+' Schritte)':'Schritt für Schritt',()=>{h.sw=0;save();render()},'s'));ban.append(nv)}
+ else if(h&&st>=3){const p=E('div');p.append('Strategie: ',techLinks(h));ban.append(p,E('p','',(h.nt?'Anhand deiner Notizen: ':'')+h.txt+' (Z = Zeile, S = Spalte)'+(h.kind=='elim'?' Streichen (rot umrandet): '+h.rem.map(([c,d])=>d+' in '+cn(c)).join(', ')+'. Ein weiterer Tipp streicht sie aus deinen Notizen.':' Ein weiterer Tipp löst das Feld.')));
+  if(stp.length>1){const nv=E('div','bst');nv.append(btn('Schritt für Schritt ('+stp.length+' Schritte)',()=>{h.sw=0;save();render()},'s'));ban.append(nv)}}
  else if(lock)ban.textContent=`Zahl-${lock}-Modus: Ein Tipp auf ein Feld trägt ${nm?'die Notiz ':'die '}${lock} ein. Tippe im Rätsel eine andere Zahl an oder unten die ${lock}, um zu wechseln bzw. zu beenden.`;
  if(ban.textContent||ban.children.length)w.append(ban);return w}
 const LK=k=>LS.flatMap(g=>g[1]).find(it=>it[0]==k);
@@ -244,12 +268,12 @@ function lesson(){const[k,n,t]=sub,w=E('div'),tr=E('div','tr');tr.append(E('h2',
 function stats(){const w=E('div','','<h2>Statistik</h2>');
  for(const k in LV){const s=S.stats[k];w.append(E('div','card',`<b>${LV[k]}</b><br>`+(s?`Abgeschlossen: ${s.n}<br>Ø Fehler: ${(s.e/s.n).toFixed(1)}<br>Ø Zeit: ${fmt(Math.round(s.t/s.n))}<br>Bestzeit: ${fmt(s.b)}`:'<span class="mut">Noch kein Spiel abgeschlossen</span>')))}return w}
 function settings(){const w=E('div','','<h2>Einstellungen</h2>');
- w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('‹ Zurück',()=>go('menu'),'s sm'),E('p','mut','Version: update9'));return w}
+ w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('‹ Zurück',()=>go('menu'),'s sm'),E('p','mut','Version: update10'));return w}
 function profil(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Profil'),E('p','mut','Dein Name (erscheint im Hauptmenü)'));
  const i=E('input');i.value=S.set.name||'';i.placeholder='Name';i.maxLength=24;i.oninput=()=>{S.set.name=i.value.trim();save()};w.append(i);return w}
 function design(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Design'),
  btn(S.set.dark?'Lightmode'+SUN:'Darkmode'+MOON,()=>{S.set.dark=!S.set.dark;save();render()},'s'),
- btn('Eigene Zahlen in Akzentfarbe: '+(S.set.ua?'An':'Aus'),()=>{S.set.ua=!S.set.ua;save();render()},'s'));
+ btn('Eigene Zahlen in <span class="acw">Akzentfarbe</span>: '+(S.set.ua?'An':'Aus'),()=>{S.set.ua=!S.set.ua;save();render()},'s'));
  w.append(E('div','','<div class="rw"><div class="ring"></div><div class="th"></div><button class="fin">Fertig</button></div>'));
  let h=hueT??S.set.hue;const rw=w.querySelector('.rw'),th=w.querySelector('.th'),fin=w.querySelector('.fin');
  const up=()=>{const a=h*Math.PI/180;th.style.left=50+Math.sin(a)*40.5+'%';th.style.top=50-Math.cos(a)*40.5+'%';const c=`hsl(${h} 75% 50%)`;th.style.background=c;fin.style.background=c;acc(h)};
@@ -279,11 +303,24 @@ const LS=[['Einsteiger-Strategien',[
 ['chain','Alternierende Ketten','Eine Kette verbindet Felder einer Zahl abwechselnd über starke Verbindungen (in einer Einheit gibt es nur zwei Felder für die Zahl, genau eines davon enthält sie) und schwache Verbindungen (zwei Felder, die sich sehen, höchstens eines enthält sie). Beginnt und endet die Kette mit einer starken Verbindung, enthält mindestens ein Ende die Zahl. Felder, die beide Enden sehen, verlieren sie.']]]];
 
 /* ---------- Render ---------- */
-const SC={menu,game,lessons,lesson,stats,settings,profil,design},NV=[['Hauptmenü','menu'],['Spiel','game'],['Lektionen','lessons'],['Statistik','stats']];
-const OF={menu:'menu',game:'game',lessons:'lessons',lesson:'lessons',stats:'stats'},SET=['settings','profil','design'];
+let pendScroll=null;
+function levels(){const k=sub,N=PZ[k].length,n=Math.min(S.prog[k]||0,N),w=E('div'),W=320,DY=88,H=70+(N-1)*DY+60;
+ let sd=[...k].reduce((a,c)=>a*31+c.charCodeAt(0),7)%9973;const rnd=()=>(sd=(sd*9301+49297)%233280)/233280;
+ const ph=rnd()*6,pts=[];let x=160;for(let i=0;i<N;i++){const t=Math.sin(i*.75+ph)*70+Math.sin(i*2.1+ph*2)*28+(rnd()-.5)*34;x=Math.max(52,Math.min(268,160+t));pts.push([Math.round(x),70+i*DY])}
+ const pth=a=>{let d='M'+a[0][0]+' '+a[0][1];for(let i=0;i<a.length-1;i++){const p0=a[i-1]||a[i],p1=a[i],p2=a[i+1],p3=a[i+2]||p2,f=v=>v.toFixed(1);d+=` C${f(p1[0]+(p2[0]-p0[0])/6)} ${f(p1[1]+(p2[1]-p0[1])/6)} ${f(p2[0]-(p3[0]-p1[0])/6)} ${f(p2[1]-(p3[1]-p1[1])/6)} ${p2[0]} ${p2[1]}`}return d};
+ w.append(btn('‹ Zurück',()=>{showLv=true;go('menu')},'s sm'),E('h2','',`${LV[k]} · ${n} / ${N}`));
+ const c=E('div','pth'),cur=Math.min(n,N-1);
+ c.append(E('div','',`<svg viewBox="0 0 ${W} ${H}"><path d="${pth(pts)}" fill="none" stroke="var(--ln)" stroke-width="10" stroke-linecap="round"/>${cur>0?`<path d="${pth(pts.slice(0,cur+1))}" fill="none" stroke="var(--acc)" stroke-width="10" stroke-linecap="round"/>`:''}</svg>`).firstChild);
+ const LOCK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+ pts.forEach(([px,py],i)=>{const st=i<n?'dn':i==n?'cr':'lk',b=E('button','nd '+st,i<=n?String(i+1):LOCK);b.style.left=(px/W*100)+'%';b.style.top=(py/H*100)+'%';
+  b.onclick=()=>{if(i>n)toast('Löse zuerst die vorherigen Rätsel.');else openPz(k,i)};c.append(b)});
+ w.append(c);pendScroll=(70+cur*DY)/H;return w}
+const SC={menu,game,lessons,lesson,levels,stats,settings,profil,design},NV=[['Hauptmenü','menu'],['Spiel','game'],['Lektionen','lessons'],['Statistik','stats']];
+const OF={levels:'menu',menu:'menu',game:'game',lessons:'lessons',lesson:'lessons',stats:'stats'},SET=['settings','profil','design'];
 function render(){acc(S.set.hue);document.documentElement.dataset.theme=S.set.dark?'dark':'light';document.documentElement.dataset.ua=S.set.ua?'1':'0';
  document.querySelector('meta[name=theme-color]').content=S.set.dark?'#111318':'#f6f7f9';
  const m=$('#main');m.innerHTML='';m.append(SC[tab]());
+ if(pendScroll!=null){const pc=m.querySelector('.pth');if(pc)m.scrollTop=pc.offsetTop+pc.offsetHeight*pendScroll-m.clientHeight/2;pendScroll=null}
  $('#gear').className=SET.includes(tab)?'on':'';$('#back').style.visibility=tab=='lesson'?'visible':'hidden';
  const n=$('#nav');n.innerHTML='';NV.forEach(([t,k])=>{const b=E('button',OF[tab]==k?'on':'',t);b.onclick=()=>{showLv=false;go(k)};n.append(b)})}
 (function(){try{const c=document.createElement('canvas').getContext('2d');c.font='700 100px '+getComputedStyle(document.body).fontFamily;const m=c.measureText('5');if(m.fontBoundingBoxAscent==null)return;
@@ -295,7 +332,7 @@ const arm=()=>{if(armed)return;armed=true;history.replaceState({i:0},'');for(let
 const restore=()=>{if(armed&&!leaving&&cur<K)history.go(K-cur)};
 ['click','pointerup','touchend'].forEach(t=>document.addEventListener(t,()=>{arm();restore()},true));
 const BK={lesson:'lessons',profil:'settings',design:'settings',settings:'menu',lessons:'menu',stats:'menu',game:'menu'};
-function back(){if(tab=='lesson'){leaveLesson();return 1}if(tab=='menu'){if(showLv){showLv=false;render();return 1}return 0}go(BK[tab]);return 1}
+function back(){if(tab=='lesson'){leaveLesson();return 1}if(tab=='levels'){showLv=true;go('menu');return 1}if(tab=='menu'){if(showLv){showLv=false;render();return 1}return 0}go(BK[tab]);return 1}
 const closeExit=()=>{if(exitDlg)exitDlg.remove();exitDlg=null};
 function toast(t){const e=E('div','toast',t);document.body.append(e);setTimeout(()=>e.remove(),3500)}
 function askExit(){if(exitDlg)return;const o=E('div','ov'),d=E('div','dl','<h2>App schließen?</h2><p>Die App wird beendet. Dein Spielstand bleibt gespeichert.</p>');
@@ -306,7 +343,7 @@ addEventListener('popstate',()=>{if(leaving||!armed)return;const i=history.state
  if(i>=cur){cur=i;return}
  cur=i;
  if(exitDlg)closeExit();else if(info){info=false;render()}
- else{const o=document.querySelector('body>.ov');if(o){o.remove();go('menu')}else if(!back())askExit()}
+ else{const o=document.querySelector('body>.ov');if(o){o.remove();if(!o.className.includes('cf'))go('menu')}else if(!back())askExit()}
  restore()});
 $('#gear').onclick=()=>go('settings');$('#back').onclick=leaveLesson;
 document.addEventListener('selectstart',e=>{if(!e.target.closest||!e.target.closest('input'))e.preventDefault()});

@@ -1,4 +1,4 @@
-const V='sudoku-v11',F=['./','./index.html','./puzzles.js','./manifest.json','./icon-192.png','./icon-512.png'];
+const V='sudoku-v12',F=['./','./index.html','./puzzles.js','./manifest.json','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>Promise.all(F.map(u=>fetch(new Request(u,{cache:'reload'})).then(r=>{if(!r.ok)throw 0;return c.put(u,r)})))));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!=V).map(x=>caches.delete(x)))));self.clients.claim()});
 self.addEventListener('fetch',e=>{if(e.request.method!='GET')return;

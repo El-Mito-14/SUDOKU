@@ -11,7 +11,7 @@
 html,body{overscroll-behavior:none}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;margin:0;background:var(--bg);color:var(--fg);font:16px system-ui,sans-serif;height:100dvh;display:flex;flex-direction:column}
 #hd{display:flex;justify-content:space-between;align-items:center;padding:calc(env(safe-area-inset-top) + 2px) 10px 0}
-#gear,#back{border:0;background:none;color:var(--fg);font-size:30px;line-height:1;padding:6px 10px}#gear.on{color:var(--acc)}#back{font-size:36px;visibility:hidden}
+#gear,#back{border:0;background:none;color:var(--fg);width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center}#gear svg,#back svg{width:24px;height:24px;display:block}#gear.on{color:var(--acc)}#back{visibility:hidden}
 #main{flex:1;overflow:auto;overscroll-behavior:contain;padding:6px 14px 14px;max-width:520px;width:100%;margin:0 auto}
 nav{display:flex;background:var(--bg);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
 nav button{flex:1;padding:14px 2px;border:0;background:none;color:var(--mut);font-size:13px}nav button.on{color:var(--acc);font-weight:700}
@@ -43,6 +43,14 @@ h1{text-align:center;font-size:42px;margin:24px 0 20px}h2{margin:8px 0}.mut{colo
 .c.rm{box-shadow:inset 0 0 0 3px #e5484d}
 .ban{background:var(--accl);border-radius:12px;padding:10px 12px;margin-top:6px;min-height:42px}
 .acw{color:var(--acc);font-weight:700}
+.gm{display:flex;flex-direction:column;height:100%}.gm>*{flex:none}.gm>.bw{flex:1 1 0;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin-top:6px}.bw .ban{margin-top:0}
+.dl.hlp{text-align:left;max-height:86dvh;overflow-y:auto;font-size:14px;line-height:1.45}.hlp h2{margin:0 0 6px;text-align:center}.hlp h3{margin:14px 0 4px;font-size:15px;color:var(--acc)}.hlp p{margin:0 0 6px}.hlp .btn{position:sticky;bottom:-22px;margin-top:12px;box-shadow:0 22px 0 0 var(--card),0 0 0 8px var(--card)}
+.stk{position:sticky;top:-6px;z-index:5;background:var(--bg);padding:6px 0;margin:0}
+.dn1{display:flex;align-items:center;gap:16px}.dn1 svg{width:110px;height:110px;flex:none}.dn1 div{font-size:14px;line-height:1.7}
+.pr{display:flex;align-items:center;gap:8px;margin:9px 0;font-size:14px}.pr b{width:74px;font-weight:600}.pr em{width:52px;text-align:right;font-style:normal;color:var(--mut);font-size:13px}.tr{flex:1;height:10px;background:var(--ln);border-radius:6px;overflow:hidden}.tr i{display:block;height:100%;background:var(--acc);border-radius:6px}
+.scht{display:flex;align-items:flex-end;gap:8px;height:140px;margin-top:6px}.sccl{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0}.sbar{width:100%;max-width:40px;background:var(--acc);border-radius:7px 7px 2px 2px}.sbv{font-size:11px;color:var(--mut);margin-bottom:3px}.sbl{font-size:10px;color:var(--mut);margin-top:5px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.sbt{display:flex;justify-content:space-between;align-items:baseline;margin:7px 0;font-size:14px}.sbt b{color:var(--acc);font-size:16px}
+.card h3{margin:0 0 8px;font-size:15px}
 .pth{position:relative;width:min(100%,360px);margin:8px auto 24px}.pth svg{display:block;width:100%;height:auto}
 .nd{position:absolute;width:46px;height:46px;transform:translate(-50%,-50%);border-radius:50%;border:3px solid var(--ln);background:var(--card);color:var(--mut);font-size:16px;font-weight:700;padding:0;display:flex;align-items:center;justify-content:center;touch-action:manipulation}
 .nd.dn{background:var(--acc);border-color:var(--acc);color:#fff}
@@ -57,7 +65,7 @@ h1{text-align:center;font-size:42px;margin:24px 0 20px}h2{margin:8px 0}.mut{colo
 .th{position:absolute;width:30px;height:30px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 4px #0008;transform:translate(-50%,-50%)}
 .fin{position:absolute;left:50%;top:50%;width:38%;aspect-ratio:1;transform:translate(-50%,-50%);border:0;border-radius:50%;color:#fff;font-size:18px;font-weight:700}
 </style></head><body>
-<header id="hd"><button id="back" aria-label="Zurück">‹</button><button id="gear" aria-label="Einstellungen">⚙&#xFE0E;</button></header>
+<header id="hd"><button id="back" aria-label="Zurück"></button><button id="gear" aria-label="Einstellungen"><svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M9.78 4.73L9.96 1.50L14.04 1.50L14.22 4.73A7.6 7.6 0 0 1 17.18 6.44L20.08 4.98L22.12 8.52L19.41 10.29A7.6 7.6 0 0 1 19.41 13.71L22.12 15.48L20.08 19.02L17.18 17.56A7.6 7.6 0 0 1 14.22 19.27L14.04 22.50L9.96 22.50L9.78 19.27A7.6 7.6 0 0 1 6.82 17.56L3.92 19.02L1.88 15.48L4.59 13.71A7.6 7.6 0 0 1 4.59 10.29L1.88 8.52L3.92 4.98L6.82 6.44A7.6 7.6 0 0 1 9.78 4.73ZM8.6 12a3.4 3.4 0 1 0 6.8 0a3.4 3.4 0 1 0-6.8 0Z"/></svg></button></header>
 <div id="main"></div>
 <nav id="nav"></nav>
 <script src="puzzles.js"></script>
@@ -129,7 +137,18 @@ function gen(k){const[tc,ok]=CL[k];let r;for(let a=0;a<25;a++){r=mk(tc);if(ok(gr
 /* ---------- Erklärungen ---------- */
 const cn=i=>`Z${R(i)+1}/S${Cc(i)+1}`,BN=['oben links','oben Mitte','oben rechts','Mitte links','Mitte','Mitte rechts','unten links','unten Mitte','unten rechts'];
 const UN=u=>u<9?`Zeile ${u+1}`:u<18?`Spalte ${u-8}`:`Block ${BN[u-18]}`,dl=a=>a.join(', ');
-function explain(s){const t=s.tech,v=s.inv;
+function xs(s){const t=s.tech,v=s.inv;
+ if(t=='naked')return `${cn(s.cell)}: nur die ${s.val} ist noch möglich.`;
+ if(t=='hidden')return `In ${UN(s.u)} passt die ${s.val} nur nach ${cn(s.cell)}.`;
+ if(t=='point'||t=='claim')return `${UN(s.u)}: die ${s.d} liegt nur in ${UN(s.v)}.`;
+ if(t[0]=='n'&&t[4]=='d')return `${UN(s.u)}: ${v.length} Felder enthalten nur ${dl(s.dg)}.`;
+ if(t[0]=='h'&&t[6]=='N')return `${UN(s.u)}: ${dl(s.dg)} nur in diesen ${v.length} Feldern.`;
+ if(t[0]=='f'){const b=s.t?'Spalten':'Zeilen',c=s.t?'Zeilen':'Spalten';return `Die ${s.d}: ${b} ${dl(s.bs.map(x=>x+1))} nur in ${c} ${dl(s.cov.map(x=>x+1))}.`}
+ if(t=='xy'||t=='xyz')return `Pivot ${cn(v[0])}, Flügel ${cn(v[1])} und ${cn(v[2])}.`;
+ if(t=='ur')return `Rechteck aus vier Feldern: ${cn(s.f)} kann nicht ${dl(s.dg)} sein.`;
+ if(t=='chain')return `Kette für die ${s.d}: `+v.map((c,i)=>(i?(i%2?' = ':' – '):'')+cn(c)).join('')+'.';
+ return ''}
+function explain(s,sh){if(sh)return xs(s);const t=s.tech,v=s.inv;
  if(t=='naked')return `Im Feld ${cn(s.cell)} sind ${dl(s.ds)} schon in Zeile, Spalte oder Block vorhanden (markierte Zahlen). Übrig bleibt nur die ${s.val}.`+(()=>{const ms=[1,2,3,4,5,6,7,8,9].filter(d=>d!=s.val&&!s.ds.includes(d));return ms.length?` (Die ${dl(ms)} ${ms.length>1?'sind':'ist'} schon ausgeschlossen.)`:''})();
  if(t=='hidden')return `In ${UN(s.u)} passt die ${s.val} nur in ein Feld: ${cn(s.cell)}. Alle anderen freien Felder sind blockiert: `+s.why.map(([i,by])=>`${cn(i)} ${by.length?'durch die '+s.val+' in '+by.map(cn).join(' und '):'(durch frühere Ausschlüsse)'}`).join('; ')+'.';
  if(t=='point'||t=='claim')return `In ${UN(s.u)} kann die ${s.d} nur in ${UN(s.v)} stehen (markierte Felder). Darum fällt sie in den übrigen Feldern von ${UN(s.v)} weg.`;
@@ -216,6 +235,7 @@ function game(){const G=S.game,w=E('div');
  if(G.hint&&(!G.hint.names||!G.hint.kind))G.hint=null;
  const h=G.hint,st=h?h.st:0,sv=sel!=null?G.cur[sel]:0,stp=h?[...h.steps,h]:[],sw=h&&st>=3&&h.sw!=null?Math.max(0,Math.min(h.sw,stp.length-1)):null,cs=sw!=null?stp[sw]:null,lastS=sw!=null&&sw==stp.length-1,
   hd=lock||sv||(h&&st>=3?(cs?(cs.d||(lastS?h.val:0)):(h.val||h.d||h.z||0)):0);
+ const SH=!!S.set.short;w.className='gm';
  w.append(E('div','top',`<b>${LV[G.k]}${G.i!=null?' · '+(G.i+1):''}</b><span>Fehler: ${G.err}</span><span id="tm">${fmt(G.t)}</span>`));
  w.append(board({hd,v:i=>G.cur[i],m:i=>G.notes[i],f:i=>{sel=i;if(lock){const v=G.cur[i];if(v&&v!=lock&&(G.p[i]||v==G.sol[i]||nm)){lock=v;render()}else act(i,lock,true)}else render()},c:i=>{let c=G.p[i]?'g ':G.cur[i]?(G.cur[i]==G.sol[i]?'u ':'e '):'';
   if(sel!=null&&!lock){if(i==sel)c+='sel ';else if(P[sel].includes(i))c+='p '}
@@ -232,21 +252,32 @@ function game(){const G=S.game,w=E('div');
  const ban=E('div','ban');
  if(msg)ban.textContent=msg;
  else if(h&&st==1)ban.textContent=h.kind=='elim'?'In diesem Bereich lassen sich Kandidaten ausschließen.':'Dieses Feld kann als Nächstes gelöst werden.';
- else if(h&&st==2){const p=E('div');p.append('Strategie: ',techLinks(h));ban.append(p,E('p','mut','Tippe auf eine Strategie, um die Lektion dazu zu öffnen.'))}
+ else if(h&&st==2){const p=E('div');p.append('Strategie: ',techLinks(h));ban.append(p);if(!SH)ban.append(E('p','mut','Tippe auf eine Strategie, um die Lektion dazu zu öffnen.'))}
  else if(h&&cs){const n=stp.length,hd2=E('div','',`<b>Schritt ${sw+1} von ${n}</b>: `);hd2.append(techLink(cs.tech));ban.append(hd2);
-  ban.append(E('p','',(h.nt&&sw==0?'Anhand deiner Notizen: ':'')+explain(cs)+' (Z = Zeile, S = Spalte)'));
+  ban.append(E('p','',(h.nt&&sw==0&&!SH?'Anhand deiner Notizen: ':'')+explain(cs,SH)+(SH?'':' (Z = Zeile, S = Spalte)')));
   if(!lastS&&cs.rem&&cs.rem.length)ban.append(E('p','','Gedanklich streichen (rot umrandet): '+cs.rem.map(([c,d])=>d+' in '+cn(c)).join(', ')+'.'));
   if(lastS)ban.append(E('p','','Jetzt lässt sich das orange Feld lösen: '+cn(h.cell)+' = '+h.val+'. Ein weiterer Tipp trägt die Zahl ein.'));
   if(sw>0)ban.append(E('p','mut','Die Streichungen aus den vorigen Schritten sind schon mitgerechnet – sie stehen nicht in deinen Notizen.'));
   const nv=E('div','bst'),b1=btn('‹ Zurück',()=>{h.sw=sw-1;save();render()},'s'),b2=btn('Weiter ›',()=>{h.sw=sw+1;save();render()},'s'),b3=btn('Übersicht',()=>{h.sw=null;save();render()},'s');
   b1.disabled=sw==0;b2.disabled=lastS;nv.append(b1,b2,b3);ban.append(nv)}
- else if(h&&st>=3){const p=E('div');p.append('Strategie: ',techLinks(h));ban.append(p,E('p','',(h.nt?'Anhand deiner Notizen: ':'')+h.txt+' (Z = Zeile, S = Spalte)'+(h.kind=='elim'?' Streichen (rot umrandet): '+h.rem.map(([c,d])=>d+' in '+cn(c)).join(', ')+'. Ein weiterer Tipp streicht sie aus deinen Notizen.':' Ein weiterer Tipp löst das Feld.')));
+ else if(h&&st>=3){const p=E('div');p.append('Strategie: ',techLinks(h));ban.append(p,E('p','',(h.nt&&!SH?'Anhand deiner Notizen: ':'')+explain(h,SH)+(SH?'':' (Z = Zeile, S = Spalte)')+(h.kind=='elim'?' Streichen'+(SH?'':' (rot umrandet)')+': '+h.rem.map(([c,d])=>d+' in '+cn(c)).join(', ')+(SH?'.':'. Ein weiterer Tipp streicht sie aus deinen Notizen.'):(SH?'':' Ein weiterer Tipp löst das Feld.'))));
   if(stp.length>1){const nv=E('div','bst');nv.append(btn('Schritt für Schritt ('+stp.length+' Schritte)',()=>{h.sw=0;save();render()},'s'));ban.append(nv)}}
  else if(lock)ban.textContent=`Zahl-${lock}-Modus: Ein Tipp auf ein Feld trägt ${nm?'die Notiz ':'die '}${lock} ein. Tippe im Rätsel eine andere Zahl an oder unten die ${lock}, um zu wechseln bzw. zu beenden.`;
- if(ban.textContent||ban.children.length)w.append(ban);return w}
+ const bw=E('div','bw');if(ban.textContent||ban.children.length)bw.append(ban);w.append(bw);return w}
 const LK=k=>LS.flatMap(g=>g[1]).find(it=>it[0]==k);
 function techLink(k){const it=LK(k);if(!it)return E('span','',T[k]);const a=E('button','lnk',T[k]);a.onclick=()=>{fromHint=true;go('lesson',it)};return a}
 function techLinks(h){const w=E('span');[...h.steps.map(x=>x.tech),h.tech].forEach((k,i)=>{if(i)w.append(E('span','',' → '));w.append(techLink(k))});return w}
+function showInfo(){const o=E('div','ov cf',`<div class="dl hlp"><h2>So funktioniert's</h2>
+<h3>Zahl-Modus</h3><p>Halte im Zahlenfeld eine Zahl etwa eine halbe Sekunde gedrückt. Alle Felder und Notizen mit dieser Zahl werden markiert, und jeder Tipp auf ein freies Feld trägt die Zahl direkt ein – bei aktivem „Notizen“ als Notiz.</p><p>Zum Wechseln tippst du unten eine andere Zahl oder im Rätsel ein Feld mit einer anderen Zahl an. Ein Tipp auf dieselbe Zahl unten beendet den Modus.</p>
+<h3>Zahlen eintragen</h3><p>Feld antippen, dann eine Zahl unten wählen. Falsche Zahlen werden rot und als Fehler gezählt. Richtig eingetragene Zahlen sind gesperrt.</p>
+<h3>Notizen</h3><p>Schaltet um, ob eine Zahl als kleine Notiz (3×3-Raster im Feld) oder als Eintrag gesetzt wird. Zahlen, die in Zeile, Spalte oder Block schon stehen, lassen sich nicht notieren. Setzt du eine Zahl, verschwindet sie aus den Notizen der Nachbarfelder.</p>
+<h3>Löschen</h3><p>Entfernt Zahl oder Notizen des gewählten Feldes (richtige Zahlen bleiben).</p>
+<h3>Rückgängig</h3><p>Nimmt bis zu 60 Schritte zurück. Fehler bleiben gezählt.</p>
+<h3>Tipp</h3><p>Der Tipp zeigt immer den einfachsten nächsten Schritt – mehrfach antippen:</p><p><b>1×</b> markiert das Feld bzw. den Bereich.<br><b>2×</b> nennt die Strategie. Tippe auf ihren Namen, um die Lektion zu öffnen.<br><b>3×</b> zeigt die beteiligten Felder mit Erklärung; zu streichende Kandidaten sind rot umrandet.<br><b>4×</b> führt den Schritt aus: Entweder wird das Feld gelöst, oder die Kandidaten werden aus deinen Notizen gestrichen. Der nächste Tipp baut darauf auf. Mit „Rückgängig“ nimmst du den Schritt zurück.</p>
+<h3>Einstellungen</h3><p>Unter Einstellungen kannst du die Strategietexte kürzer anzeigen lassen und die Farbe eigener Zahlen wählen (Design).</p></div>`);
+ o.firstChild.append(btn('Schließen',()=>o.remove()));document.body.append(o)}
+const UPT=['lesson','levels','profil','design','settings'];
+function up(){if(tab=='lesson')leaveLesson();else if(tab=='levels'){showLv=true;go('menu')}else go(BK[tab]||'menu')}
 function leaveLesson(){if(fromHint){fromHint=false;go('game')}else go('lessons')}
 function lessons(){const w=E('div','','<h2>Lektionen</h2>');
  for(const[g,its]of LS){w.append(E('h3','mut',g));its.forEach(it=>w.append(btn(it[1],()=>{fromHint=false;go('lesson',it)},'s')))}return w}
@@ -265,13 +296,21 @@ function lesson(){const[k,n,t]=sub,w=E('div'),tr=E('div','tr');tr.append(E('h2',
   const res=pl?(rev?`Ergebnis: In ${cn(s.cell)} gehört die ${s.val}.`:'Welche Zahl gehört in das orange Feld? „Auflösung zeigen“ verrät es.'):(rev?'Die rot durchgestrichenen Kandidaten fallen weg.':'Welche Kandidaten lassen sich streichen? „Auflösung zeigen“ verrät es.');
   d.append(E('p','',explain(s)),E('p','',res),E('p','mut','Orange = Zielfeld bzw. Kettenenden, Gelb = beteiligte Felder, getönt = betrachtete Zeile/Spalte/Block. Z = Zeile, S = Spalte.'),btn('Schließen',()=>{info=false;render()}));o.append(d);w.append(o)}
  return w}
-function stats(){const w=E('div','','<h2>Statistik</h2>');
- for(const k in LV){const s=S.stats[k];w.append(E('div','card',`<b>${LV[k]}</b><br>`+(s?`Abgeschlossen: ${s.n}<br>Ø Fehler: ${(s.e/s.n).toFixed(1)}<br>Ø Zeit: ${fmt(Math.round(s.t/s.n))}<br>Bestzeit: ${fmt(s.b)}`:'<span class="mut">Noch kein Spiel abgeschlossen</span>')))}return w}
+function stats(){const w=E('div','','<h2>Statistik</h2>'),ks=Object.keys(LV),st=k=>S.stats[k]||{n:0,e:0,t:0,b:0};
+ const all=ks.reduce((a,k)=>a+PZ[k].length,0),pg=ks.reduce((a,k)=>a+Math.min(S.prog[k]||0,PZ[k].length),0),tot=ks.reduce((a,k)=>a+st(k).n,0),tt=ks.reduce((a,k)=>a+st(k).t,0),te=ks.reduce((a,k)=>a+st(k).e,0);
+ const C=2*Math.PI*40,fm=t=>t>=3600?(t/3600|0)+' h '+String((t%3600)/60|0).padStart(2,'0')+' min':fmt(t);
+ w.append(E('div','card dn1',`<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="var(--ln)" stroke-width="12"/><circle cx="50" cy="50" r="40" fill="none" stroke="var(--acc)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${(C*pg/all).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 50 50)"/><text x="50" y="52" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">${pg}</text><text x="50" y="66" text-anchor="middle" font-size="9" fill="var(--mut)">von ${all}</text></svg><div><b>Gesamtfortschritt</b><br>Abgeschlossen: <b class="acw">${tot}</b><br>Spielzeit: ${tot?fm(tt):'–'}<br>Fehler: ${tot?te:'–'}</div>`));
+ w.append(E('div','card',`<h3>Fortschritt je Stufe</h3>`+ks.map(k=>{const n=Math.min(S.prog[k]||0,PZ[k].length);return `<div class="pr"><b>${LV[k]}</b><div class="tr"><i style="width:${n/PZ[k].length*100}%"></i></div><em>${n} / ${PZ[k].length}</em></div>`}).join('')));
+ const bars=(vals,f)=>{const mx=Math.max(...vals,1e-9);return '<div class="scht">'+vals.map((v,i)=>`<div class="sccl"><div class="sbv">${v?f(v):'–'}</div><div class="sbar" style="height:${v?Math.max(5,v/mx*90):2}px;opacity:${v?1:.25}"></div><div class="sbl">${LV[ks[i]]}</div></div>`).join('')+'</div>'};
+ w.append(E('div','card','<h3>Ø Zeit je Stufe</h3>'+bars(ks.map(k=>st(k).n?Math.round(st(k).t/st(k).n):0),fmt)));
+ w.append(E('div','card','<h3>Ø Fehler je Stufe</h3>'+bars(ks.map(k=>st(k).n?st(k).e/st(k).n:0),v=>v.toFixed(1))));
+ w.append(E('div','card','<h3>Bestzeiten</h3>'+ks.map(k=>`<div class="sbt"><span>${LV[k]}</span><b>${st(k).n?fmt(st(k).b):'–'}</b></div>`).join('')));
+ return w}
 function settings(){const w=E('div','','<h2>Einstellungen</h2>');
- w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('‹ Zurück',()=>go('menu'),'s sm'),E('p','mut','Version: update10'));return w}
-function profil(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Profil'),E('p','mut','Dein Name (erscheint im Hauptmenü)'));
+ w.append(btn('Profil',()=>go('profil'),'s'),btn('Design',()=>go('design'),'s'),btn('Strategietexte: '+(S.set.short?'Kurz':'Ausführlich'),()=>{S.set.short=!S.set.short;save();render()},'s'),E('p','mut','Version: update11'));return w}
+function profil(){const w=E('div');w.append(E('h2','','Profil'),E('p','mut','Dein Name (erscheint im Hauptmenü)'));
  const i=E('input');i.value=S.set.name||'';i.placeholder='Name';i.maxLength=24;i.oninput=()=>{S.set.name=i.value.trim();save()};w.append(i);return w}
-function design(){const w=E('div');w.append(btn('‹ Zurück',()=>go('settings'),'s sm'),E('h2','','Design'),
+function design(){const w=E('div');w.append(E('h2','','Design'),
  btn(S.set.dark?'Lightmode'+SUN:'Darkmode'+MOON,()=>{S.set.dark=!S.set.dark;save();render()},'s'),
  btn('Eigene Zahlen in <span class="acw">Akzentfarbe</span>: '+(S.set.ua?'An':'Aus'),()=>{S.set.ua=!S.set.ua;save();render()},'s'));
  w.append(E('div','','<div class="rw"><div class="ring"></div><div class="th"></div><button class="fin">Fertig</button></div>'));
@@ -303,25 +342,27 @@ const LS=[['Einsteiger-Strategien',[
 ['chain','Alternierende Ketten','Eine Kette verbindet Felder einer Zahl abwechselnd über starke Verbindungen (in einer Einheit gibt es nur zwei Felder für die Zahl, genau eines davon enthält sie) und schwache Verbindungen (zwei Felder, die sich sehen, höchstens eines enthält sie). Beginnt und endet die Kette mit einer starken Verbindung, enthält mindestens ein Ende die Zahl. Felder, die beide Enden sehen, verlieren sie.']]]];
 
 /* ---------- Render ---------- */
-let pendScroll=null;
-function levels(){const k=sub,N=PZ[k].length,n=Math.min(S.prog[k]||0,N),w=E('div'),W=320,DY=88,H=70+(N-1)*DY+60;
+let pendScroll=null,lastTab='';
+function levels(){const k=sub,N=PZ[k].length,n=Math.min(S.prog[k]||0,N),w=E('div'),W=320,DY=88,H=60+(N-1)*DY+70;
  let sd=[...k].reduce((a,c)=>a*31+c.charCodeAt(0),7)%9973;const rnd=()=>(sd=(sd*9301+49297)%233280)/233280;
- const ph=rnd()*6,pts=[];let x=160;for(let i=0;i<N;i++){const t=Math.sin(i*.75+ph)*70+Math.sin(i*2.1+ph*2)*28+(rnd()-.5)*34;x=Math.max(52,Math.min(268,160+t));pts.push([Math.round(x),70+i*DY])}
- const pth=a=>{let d='M'+a[0][0]+' '+a[0][1];for(let i=0;i<a.length-1;i++){const p0=a[i-1]||a[i],p1=a[i],p2=a[i+1],p3=a[i+2]||p2,f=v=>v.toFixed(1);d+=` C${f(p1[0]+(p2[0]-p0[0])/6)} ${f(p1[1]+(p2[1]-p0[1])/6)} ${f(p2[0]-(p3[0]-p1[0])/6)} ${f(p2[1]-(p3[1]-p1[1])/6)} ${p2[0]} ${p2[1]}`}return d};
- w.append(btn('‹ Zurück',()=>{showLv=true;go('menu')},'s sm'),E('h2','',`${LV[k]} · ${n} / ${N}`));
+ const ph=rnd()*6,pts=[];for(let i=0;i<N;i++){const t=Math.sin(i*.75+ph)*70+Math.sin(i*2.1+ph*2)*28+(rnd()-.5)*34;pts.push([Math.round(Math.max(52,Math.min(268,160+t))),60+(N-1-i)*DY])}
+ const f=v=>v.toFixed(1),seg=i=>{const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;return ` C${f(p1[0]+(p2[0]-p0[0])/6)} ${f(p1[1]+(p2[1]-p0[1])/6)} ${f(p2[0]-(p3[0]-p1[0])/6)} ${f(p2[1]-(p3[1]-p1[1])/6)} ${p2[0]} ${p2[1]}`};
+ const pth=up=>{let d='M'+pts[0][0]+' '+pts[0][1];for(let i=0;i<up;i++)d+=seg(i);return d};
+ w.append(E('h2','stk',`${LV[k]} · ${n} / ${N}`));
  const c=E('div','pth'),cur=Math.min(n,N-1);
- c.append(E('div','',`<svg viewBox="0 0 ${W} ${H}"><path d="${pth(pts)}" fill="none" stroke="var(--ln)" stroke-width="10" stroke-linecap="round"/>${cur>0?`<path d="${pth(pts.slice(0,cur+1))}" fill="none" stroke="var(--acc)" stroke-width="10" stroke-linecap="round"/>`:''}</svg>`).firstChild);
+ c.append(E('div','',`<svg viewBox="0 0 ${W} ${H}"><path d="${pth(N-1)}" fill="none" stroke="var(--ln)" stroke-width="10" stroke-linecap="round"/>${cur>0?`<path d="${pth(cur)}" fill="none" stroke="var(--acc)" stroke-width="10" stroke-linecap="round"/>`:''}</svg>`).firstChild);
  const LOCK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
  pts.forEach(([px,py],i)=>{const st=i<n?'dn':i==n?'cr':'lk',b=E('button','nd '+st,i<=n?String(i+1):LOCK);b.style.left=(px/W*100)+'%';b.style.top=(py/H*100)+'%';
   b.onclick=()=>{if(i>n)toast('Löse zuerst die vorherigen Rätsel.');else openPz(k,i)};c.append(b)});
- w.append(c);pendScroll=(70+cur*DY)/H;return w}
+ w.append(c);pendScroll=pts[cur][1]/H;return w}
 const SC={menu,game,lessons,lesson,levels,stats,settings,profil,design},NV=[['Hauptmenü','menu'],['Spiel','game'],['Lektionen','lessons'],['Statistik','stats']];
 const OF={levels:'menu',menu:'menu',game:'game',lessons:'lessons',lesson:'lessons',stats:'stats'},SET=['settings','profil','design'];
 function render(){acc(S.set.hue);document.documentElement.dataset.theme=S.set.dark?'dark':'light';document.documentElement.dataset.ua=S.set.ua?'1':'0';
  document.querySelector('meta[name=theme-color]').content=S.set.dark?'#111318':'#f6f7f9';
- const m=$('#main');m.innerHTML='';m.append(SC[tab]());
- if(pendScroll!=null){const pc=m.querySelector('.pth');if(pc)m.scrollTop=pc.offsetTop+pc.offsetHeight*pendScroll-m.clientHeight/2;pendScroll=null}
- $('#gear').className=SET.includes(tab)?'on':'';$('#back').style.visibility=tab=='lesson'?'visible':'hidden';
+ const m=$('#main');m.innerHTML='';m.append(SC[tab]());if(lastTab!=tab){m.scrollTop=0;lastTab=tab}
+ if(pendScroll!=null){const pc=m.querySelector('.pth');if(pc)m.scrollTop=pc.offsetTop+pc.offsetHeight*pendScroll-m.clientHeight*.72;pendScroll=null}
+ $('#gear').className=SET.includes(tab)?'on':'';{const bk=$('#back'),gm=tab=='game';bk.innerHTML=gm?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.4" r=".7" fill="currentColor"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';bk.style.visibility=gm||UPT.includes(tab)?'visible':'hidden';bk.setAttribute('aria-label',gm?'Hilfe':'Zurück')}
+ m.style.overflow=tab=='game'?'hidden':'';
  const n=$('#nav');n.innerHTML='';NV.forEach(([t,k])=>{const b=E('button',OF[tab]==k?'on':'',t);b.onclick=()=>{showLv=false;go(k)};n.append(b)})}
 (function(){try{const c=document.createElement('canvas').getContext('2d');c.font='700 100px '+getComputedStyle(document.body).fontFamily;const m=c.measureText('5');if(m.fontBoundingBoxAscent==null)return;
  const fa=m.fontBoundingBoxAscent,fd=m.fontBoundingBoxDescent,gc=(100-fa-fd)/2+fa-(m.actualBoundingBoxAscent-m.actualBoundingBoxDescent)/2,dy=(50-gc)/100*2,st=document.documentElement.style;
@@ -345,7 +386,7 @@ addEventListener('popstate',()=>{if(leaving||!armed)return;const i=history.state
  if(exitDlg)closeExit();else if(info){info=false;render()}
  else{const o=document.querySelector('body>.ov');if(o){o.remove();if(!o.className.includes('cf'))go('menu')}else if(!back())askExit()}
  restore()});
-$('#gear').onclick=()=>go('settings');$('#back').onclick=leaveLesson;
+$('#gear').onclick=()=>go('settings');$('#back').onclick=()=>tab=='game'?showInfo():up();
 document.addEventListener('selectstart',e=>{if(!e.target.closest||!e.target.closest('input'))e.preventDefault()});
 document.addEventListener('contextmenu',e=>{if(!e.target.closest||!e.target.closest('input'))e.preventDefault()});
 setInterval(()=>{if(tab=='game'&&S.game&&!document.hidden){S.game.t++;const e=$('#tm');if(e)e.textContent=fmt(S.game.t);if(S.game.t%10==0)save()}},1000);
